@@ -258,7 +258,7 @@ const PublicQRScan = ({ regIdParam }) => {
           </div>
         )}
 
-        {/* Profile Card Header */}
+        {/* 1. Profile Card Header */}
         <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.5rem 1.25rem', textAlign: 'center', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
           {pilgrim.photo_url ? (
             <img
@@ -297,21 +297,7 @@ const PublicQRScan = ({ regIdParam }) => {
           </div>
         </div>
 
-        {/* Location Log Card */}
-        <div style={{ background: permissionGranted ? '#f0fdf4' : '#eff6ff', border: permissionGranted ? '1px solid #bbf7d0' : '1px solid #bfdbfe', borderRadius: '12px', padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: permissionGranted ? '#166534' : '#1e40af', fontWeight: 600 }}>
-            <MapPin size={18} color={permissionGranted ? '#16a34a' : '#2563eb'} />
-            <span>{locationStatus}</span>
-          </div>
-
-          {permissionGranted && (
-            <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <CheckCircle2 size={14} /> Location coordinates & address transmitted live to Admin & Family Dashboard!
-            </div>
-          )}
-        </div>
-
-        {/* Emergency Contacts Card */}
+        {/* 2. Emergency Contacts Card */}
         <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
           <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', letterSpacing: '0.05em', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <PhoneCall size={14} color="#2563eb" /> EMERGENCY CONTACTS
@@ -370,75 +356,16 @@ const PublicQRScan = ({ regIdParam }) => {
           )}
         </div>
 
-        {/* Medical Information Card */}
-        <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', letterSpacing: '0.05em', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Heart size={14} color="#dc2626" /> MEDICAL INFORMATION
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
-              <span style={{ color: '#64748b' }}>Blood Group:</span>
-              <span style={{ fontWeight: 800, color: '#dc2626' }}>{pilgrim.blood_group}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
-              <span style={{ color: '#64748b' }}>Medical Conditions:</span>
-              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.medical_conditions || 'None'}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
-              <span style={{ color: '#64748b' }}>Current Medications:</span>
-              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.medications || 'None'}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#64748b' }}>Known Allergies:</span>
-              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.allergies || 'None'}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Registration Details Card */}
-        <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', letterSpacing: '0.05em', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <FileText size={14} color="#0284c7" /> REGISTRATION & WARI DETAILS
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
-              <span style={{ color: '#64748b' }}>District / Address:</span>
-              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.district || pilgrim.address}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
-              <span style={{ color: '#64748b' }}>Participating With:</span>
-              <span style={{ fontWeight: 600, color: '#0f172a', textTransform: 'capitalize' }}>{pilgrim.participating_with}</span>
-            </div>
-            {pilgrim.dindi_name && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
-                <span style={{ color: '#64748b' }}>Dindi / Group Name:</span>
-                <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.dindi_name}</span>
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#64748b' }}>Verification Status:</span>
-              <span style={{ background: '#dcfce7', color: '#15803d', fontWeight: 700, fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
-                {pilgrim.status}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* ---------------------------------------------------- */}
-        {/* NEW EMERGENCY CATEGORY SECTION AT THE BOTTOM */}
-        {/* ---------------------------------------------------- */}
-        
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', marginTop: '1rem', marginBottom: '0.5rem' }}>
+        {/* 3. EMERGENCY CATEGORY SECTION ("What happened?") */}
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
           What happened?
         </h2>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.5rem' }}>
           {EMERGENCY_CATEGORIES.map((cat) => {
             const isSelected = selectedCategory?.id === cat.id;
             const Icon = cat.icon;
-            // In the screenshot, Medical is red bordered & red text, others are gray text & border initially
+            
             const dynamicColor = cat.id === 'MEDICAL' ? cat.color : (isSelected ? cat.color : '#334155');
             const dynamicBorder = cat.id === 'MEDICAL' ? cat.color : (isSelected ? cat.color : '#e2e8f0');
             const dynamicBg = isSelected ? cat.bg : '#ffffff';
@@ -473,7 +400,7 @@ const PublicQRScan = ({ regIdParam }) => {
           })}
         </div>
 
-        {/* ACTION PANEL */}
+        {/* Action Panel for selected emergency */}
         {selectedCategory && (
           <div style={{ background: '#ffffff', border: `1px solid ${selectedCategory.border === '#e2e8f0' ? '#cbd5e1' : selectedCategory.border}`, borderRadius: '16px', padding: '1.25rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', animation: 'slideUp 0.3s ease-out' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -563,6 +490,78 @@ const PublicQRScan = ({ regIdParam }) => {
             )}
           </div>
         )}
+
+        <hr style={{ border: 0, borderTop: '1px solid #e2e8f0', margin: '1rem 0' }} />
+
+        {/* 4. Location Log Card */}
+        <div style={{ background: permissionGranted ? '#f0fdf4' : '#eff6ff', border: permissionGranted ? '1px solid #bbf7d0' : '1px solid #bfdbfe', borderRadius: '12px', padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: permissionGranted ? '#166534' : '#1e40af', fontWeight: 600 }}>
+            <MapPin size={18} color={permissionGranted ? '#16a34a' : '#2563eb'} />
+            <span>{locationStatus}</span>
+          </div>
+
+          {permissionGranted && (
+            <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <CheckCircle2 size={14} /> Location coordinates & address transmitted live to Admin & Family Dashboard!
+            </div>
+          )}
+        </div>
+
+        {/* 5. Medical Information Card */}
+        <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', letterSpacing: '0.05em', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Heart size={14} color="#dc2626" /> MEDICAL INFORMATION
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>Blood Group:</span>
+              <span style={{ fontWeight: 800, color: '#dc2626' }}>{pilgrim.blood_group}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>Medical Conditions:</span>
+              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.medical_conditions || 'None'}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>Current Medications:</span>
+              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.medications || 'None'}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: '#64748b' }}>Known Allergies:</span>
+              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.allergies || 'None'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 6. Registration Details Card */}
+        <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', letterSpacing: '0.05em', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <FileText size={14} color="#0284c7" /> REGISTRATION & WARI DETAILS
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>District / Address:</span>
+              <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.district || pilgrim.address}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>Participating With:</span>
+              <span style={{ fontWeight: 600, color: '#0f172a', textTransform: 'capitalize' }}>{pilgrim.participating_with}</span>
+            </div>
+            {pilgrim.dindi_name && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+                <span style={{ color: '#64748b' }}>Dindi / Group Name:</span>
+                <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.dindi_name}</span>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: '#64748b' }}>Verification Status:</span>
+              <span style={{ background: '#dcfce7', color: '#15803d', fontWeight: 700, fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                {pilgrim.status}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <footer style={{ textAlign: 'center', fontSize: '0.75rem', color: '#94a3b8', paddingTop: '1.5rem' }}>
           Verified Maulinondh Safety Record • Google Maps Geocoding Integration
