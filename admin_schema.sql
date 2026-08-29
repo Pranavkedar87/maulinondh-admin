@@ -57,12 +57,28 @@ CREATE TABLE IF NOT EXISTS public.qr_alerts (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- 6. Extend incidents table for IVR and QR/Web unification
+ALTER TABLE public.incidents
+  ADD COLUMN IF NOT EXISTS type TEXT,
+  ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+  ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION,
+  ADD COLUMN IF NOT EXISTS location_accuracy DOUBLE PRECISION,
+  ADD COLUMN IF NOT EXISTS address TEXT,
+  ADD COLUMN IF NOT EXISTS place_id TEXT,
+  ADD COLUMN IF NOT EXISTS maps_url TEXT,
+  ADD COLUMN IF NOT EXISTS reporter_name TEXT,
+  ADD COLUMN IF NOT EXISTS reporter_phone TEXT,
+  ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'STANDARD',
+  ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'WEB',
+  ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMPTZ;
+
 -- Row Level Security (RLS) Configuration
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.varkaris ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.qr_scans ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.qr_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.incidents ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
 DROP POLICY IF EXISTS "Public scan insert" ON public.qr_scans;
@@ -73,6 +89,9 @@ CREATE POLICY "Public scan select" ON public.qr_scans FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public alerts insert" ON public.qr_alerts;
 CREATE POLICY "Public alerts insert" ON public.qr_alerts FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public incident insert" ON public.incidents;
+CREATE POLICY "Public incident insert" ON public.incidents FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Admins select varkaris" ON public.varkaris;
 CREATE POLICY "Admins select varkaris" ON public.varkaris FOR SELECT USING (true);
@@ -88,3 +107,6 @@ CREATE POLICY "Admins manage qr_scans" ON public.qr_scans FOR ALL USING (true);
 
 DROP POLICY IF EXISTS "Admins manage qr_alerts" ON public.qr_alerts;
 CREATE POLICY "Admins manage qr_alerts" ON public.qr_alerts FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admins manage incidents" ON public.incidents;
+CREATE POLICY "Admins manage incidents" ON public.incidents FOR ALL USING (true);

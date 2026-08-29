@@ -11,6 +11,7 @@ import Alerts from './pages/Alerts';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import PublicQRScan from './pages/PublicQRScan';
+import IvrDemo from './pages/IvrDemo';
 
 function App() {
   const location = useLocation();
@@ -25,6 +26,9 @@ function App() {
     <Routes>
       {/* Public QR Scanner Landing Page */}
       <Route path="/u/:regId" element={<PublicQRScan />} />
+
+      {/* IVR Browser Demo */}
+      <Route path="/ivr-demo" element={<IvrDemo />} />
 
       {/* Admin Authentication */}
       <Route path="/login" element={<AdminLogin />} />
