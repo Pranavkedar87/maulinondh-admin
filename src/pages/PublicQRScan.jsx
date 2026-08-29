@@ -304,29 +304,6 @@ const PublicQRScan = ({ regIdParam }) => {
             <span>{locationStatus}</span>
           </div>
 
-          <button
-            onClick={() => processAndTransmitLocation(currentScanId, pilgrim)}
-            disabled={fetchingLocation}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.4rem',
-              background: '#ea580c',
-              color: '#ffffff',
-              border: 'none',
-              padding: '0.6rem 1rem',
-              borderRadius: '8px',
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(234,88,12,0.3)'
-            }}
-          >
-            <Navigation size={16} />
-            <span>{fetchingLocation ? 'Detecting Location...' : '📍 Refresh Exact GPS Location via Google Maps'}</span>
-          </button>
-
           {permissionGranted && (
             <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <CheckCircle2 size={14} /> Location coordinates & address transmitted live to Admin & Family Dashboard!
