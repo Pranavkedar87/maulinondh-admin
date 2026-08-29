@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "MAULINONDH",
+    "adminTitle": "MAULINONDH Admin",
+    "tagline": "Wari Safe, Mauli's Care."
+  },
+  "language": {
+    "select": "Select Language",
+    "mr": "मराठी",
+    "hi": "हिंदी",
+    "en": "English"
+  },
+  "status": {
+    "PENDING_VERIFICATION": "Pending Verification",
+    "VERIFIED": "Approved / Verified",
+    "ACTION_REQUIRED": "Action Required",
+    "REJECTED": "Rejected"
+  },
+  "admin": {
+    "loginTitle": "Admin Control Center",
+    "loginSub": "Enter operational credentials to manage pilgrim records",
+    "emailLabel": "Admin Email / ID",
+    "passwordLabel": "Password",
+    "loginBtn": "Admin Sign In",
+    "logout": "Logout",
+    "rememberMe": "Remember Me",
+    "forgotPassword": "Forgot Password?",
+    "dashboard": "Dashboard",
+    "pilgrims": "Pilgrim Registrations",
+    "pendingVerification": "Pending Verification",
+    "qrManagement": "QR & Band Management",
+    "orders": "Orders & Band Issuance",
+    "emergency": "Emergency Cases",
+    "reports": "Reports & Analytics",
+    "settings": "Settings",
+    "stats": {
+      "totalPilgrims": "Total Pilgrims",
+      "pendingApps": "Pending Applications",
+      "approvedApps": "Approved Applications",
+      "rejectedApps": "Rejected Applications",
+      "qrGenerated": "QR Generated",
+      "bandsIssued": "QR Bands Issued",
+      "bandsPending": "QR Bands Pending"
+    },
+    "pilgrimDetail": {
+      "personalInfo": "Personal Information",
+      "medicalInfo": "Medical Information",
+      "emergencyContact": "Emergency Contact",
+      "wariInfo": "Wari Information",
+      "regInfo": "Registration Details",
+      "approveBtn": "Approve Pilgrim",
+      "rejectBtn": "Reject Application",
+      "rejectionReason": "Reason for Rejection",
+      "rejectReasonPlaceholder": "Enter clear reason (e.g. Invalid emergency phone number)",
+      "generateQR": "Generate QR Identity",
+      "generatePDF": "Generate Printable PDF",
+      "markIssued": "Mark QR Band as Issued",
+      "statusUpdated": "Status updated successfully",
+      "confirmApprove": "Are you sure you want to approve this pilgrim?",
+      "confirmReject": "Are you sure you want to reject this pilgrim?",
+      "confirmIssue": "Confirm physical band issued to {name}?",
+      "qrGeneratedSuccess": "Unique QR generated and assigned!",
+      "bandIssuedSuccess": "Band marked as issued & activated!"
+    },
+    "table": {
+      "photo": "Photo",
+      "name": "Name",
+      "regId": "Registration ID",
+      "phone": "Mobile",
+      "bloodGroup": "Blood Group",
+      "status": "Status",
+      "qrStatus": "QR / Band",
+      "regDate": "Registered Date",
+      "actions": "Actions",
+      "view": "View Profile"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by Name, Reg ID, Mobile...",
+      "all": "All Records",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "qrGenerated": "QR Generated",
+      "bandIssued": "Band Issued"
+    }
+  }
+}

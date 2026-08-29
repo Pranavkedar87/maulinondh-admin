@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "माऊलीनोंद",
+    "adminTitle": "माऊलीनोंद ॲडमिन",
+    "tagline": "वारी सुरक्षित, माऊलींची काळजी."
+  },
+  "language": {
+    "select": "भाषा निवडा",
+    "mr": "🇮🇳 मराठी",
+    "hi": "हिंदी",
+    "en": "English"
+  },
+  "status": {
+    "PENDING_VERIFICATION": "पडताळणी प्रलंबित",
+    "VERIFIED": "मंजूर / पडताळणी पूर्ण",
+    "ACTION_REQUIRED": "कारवाई आवश्यक",
+    "REJECTED": "नाकारले"
+  },
+  "admin": {
+    "loginTitle": "ॲडमिन नियंत्रण केंद्र",
+    "loginSub": "वारकरी नोंदणी व्यवस्थापनासाठी ॲडमिन क्रेडेंशियल्स प्रविष्ट करा",
+    "emailLabel": "ॲडमिन ईमेल / आयडी",
+    "passwordLabel": "पासवर्ड",
+    "loginBtn": "ॲडमिन साइन इन",
+    "logout": "लॉगआउट",
+    "rememberMe": "मला लक्षात ठेवा",
+    "forgotPassword": "पासवर्ड विसरलात?",
+    "dashboard": "डॅशबोर्ड",
+    "pilgrims": "वारकरी नोंदणी",
+    "pendingVerification": "प्रलंबित अर्ज",
+    "qrManagement": "QR आणि बँड व्यवस्थापन",
+    "orders": "ऑर्डर्स व बँड वाटप",
+    "emergency": "आपत्कालीन प्रकरणे",
+    "reports": "अहवाल व विश्लेषण",
+    "settings": "सेटिंग्ज",
+    "stats": {
+      "totalPilgrims": "एकूण वारकरी",
+      "pendingApps": "प्रलंबित अर्ज",
+      "approvedApps": "मंजूर अर्ज",
+      "rejectedApps": "नाकारलेले अर्ज",
+      "qrGenerated": "तयार केलेले QR",
+      "bandsIssued": "दिलेले QR बँड",
+      "bandsPending": "बाकी QR बँड"
+    },
+    "pilgrimDetail": {
+      "personalInfo": "वैयक्तिक माहिती",
+      "medicalInfo": "वैद्यकीय माहिती",
+      "emergencyContact": "आपत्कालीन संपर्क",
+      "wariInfo": "वारी माहिती",
+      "regInfo": "नोंदणी तपशील",
+      "approveBtn": "अर्ज मंजूर करा",
+      "rejectBtn": "अर्ज नाकारा",
+      "rejectionReason": "नाकारण्याचे कारण",
+      "rejectReasonPlaceholder": "स्पष्ट कारण लिहा (उदा. आपत्कालीन संपर्क क्रमांक चुकीचा आहे)",
+      "generateQR": "युनिक QR जनरेट करा",
+      "generatePDF": "प्रिंटयोग्य PDF बनवा",
+      "markIssued": "बँड दिला म्हणून चिन्हांकित करा",
+      "statusUpdated": "स्थिती यशस्वीरीत्या अद्यतनित केली",
+      "confirmApprove": "आपण खरोखर या वारकऱ्याचा अर्ज मंजूर करू इच्छिता?",
+      "confirmReject": "आपण खरोखर हा अर्ज नाकारू इच्छिता?",
+      "confirmIssue": "{name} यांना भौतिक बँड दिला गेला आहे याची पुष्टी करा?",
+      "qrGeneratedSuccess": "युनिक QR यशस्वीरीत्या तयार करून जोडला गेला!",
+      "bandIssuedSuccess": "बँड दिला गेला आहे व सक्रिय झाला आहे!"
+    },
+    "table": {
+      "photo": "फोटो",
+      "name": "नाव",
+      "regId": "नोंदणी आयडी",
+      "phone": "मोबाईल",
+      "bloodGroup": "रक्तगट",
+      "status": "स्थिती",
+      "qrStatus": "QR / बँड",
+      "regDate": "नोंदणी तारीख",
+      "actions": "कृती",
+      "view": "प्रोफाईल पहा"
+    },
+    "filters": {
+      "searchPlaceholder": "नाव, नोंदणी आयडी, मोबाईलने शोधा...",
+      "all": "सर्व नोंदी",
+      "pending": "प्रलंबित",
+      "approved": "मंजूर",
+      "rejected": "नाकारलेले",
+      "qrGenerated": "QR तयार",
+      "bandIssued": "बँड दिला"
+    }
+  }
+}
