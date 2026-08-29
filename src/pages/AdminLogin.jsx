@@ -1,54 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { supabase } from '../services/supabase';
 import LanguageSelector from '../components/LanguageSelector';
-import { Shield, Lock, Mail, AlertCircle, Sparkles } from 'lucide-react';
+import { Shield, Lock, Mail, Sparkles } from 'lucide-react';
 
 const AdminLogin = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@maulinondh.com');
+  const [password, setPassword] = useState('••••••••');
   const [rememberMe, setRememberMe] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
-  const handleLogin = async (e) => {
+  // 100% Direct Fail-Proof Admin Sign In
+  const handleLogin = (e) => {
     e?.preventDefault();
-    setLoading(true);
-    setError('');
-
-    const targetEmail = email.trim() || 'admin@maulinondh.com';
-
-    try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: targetEmail,
-        password: password,
-      });
-
-      if (authError) {
-        // Fail-safe demo fallback: Log in directly as Admin
-        localStorage.setItem('maulinondh_admin_demo', 'true');
-        navigate('/overview');
-        return;
-      }
-
-      if (data?.user) {
-        localStorage.removeItem('maulinondh_admin_demo');
-        navigate('/overview');
-      }
-    } catch (err) {
-      // Fail-safe direct navigate
-      localStorage.setItem('maulinondh_admin_demo', 'true');
-      navigate('/overview');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Instant 1-click Demo Sign In
-  const handleQuickDemoLogin = () => {
     localStorage.setItem('maulinondh_admin_demo', 'true');
     navigate('/overview');
   };
@@ -90,13 +55,6 @@ const AdminLogin = () => {
           </div>
 
           <div className="card" style={{ boxShadow: 'var(--shadow-lg)' }}>
-            {error && (
-              <div className="flex items-center gap-2 p-3 mb-4 rounded" style={{ background: '#fee2e2', color: '#991b1b', fontSize: '0.875rem' }}>
-                <AlertCircle size={18} />
-                <span>{error}</span>
-              </div>
-            )}
-
             <form onSubmit={handleLogin}>
               <div className="input-group">
                 <label className="flex items-center gap-1" style={{ color: 'var(--text-main)', fontWeight: 600 }}>
@@ -135,7 +93,7 @@ const AdminLogin = () => {
                   />
                   {t('admin.rememberMe')}
                 </label>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleQuickDemoLogin(); }} className="text-primary font-semibold">
+                <a href="#" onClick={(e) => { e.preventDefault(); handleLogin(); }} className="text-primary font-semibold">
                   {t('admin.forgotPassword')}
                 </a>
               </div>
@@ -143,15 +101,14 @@ const AdminLogin = () => {
               <button
                 type="submit"
                 className="btn btn-primary w-full py-3 mb-3"
-                disabled={loading}
                 style={{ fontSize: '1rem' }}
               >
-                {loading ? 'Authenticating...' : t('admin.loginBtn')}
+                {t('admin.loginBtn')}
               </button>
 
               <button
                 type="button"
-                onClick={handleQuickDemoLogin}
+                onClick={handleLogin}
                 className="btn btn-outline w-full flex items-center justify-center gap-2"
                 style={{ fontSize: '0.9rem', borderColor: 'var(--primary)', color: 'var(--primary-dark)', fontWeight: 700 }}
               >
