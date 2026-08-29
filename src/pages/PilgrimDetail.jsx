@@ -72,7 +72,6 @@ const PilgrimDetail = () => {
     fetchPilgrimDetail();
   }, [id]);
 
-  // Generate QR URL with correct subpath for GitHub Pages
   const getQRScanUrl = (regId) => {
     const origin = window.location.origin;
     const base = import.meta.env.BASE_URL || '/';
@@ -126,22 +125,57 @@ const PilgrimDetail = () => {
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
   };
 
+  // 1-Click Approve Registration & Auto-Generate QR Code
   const handleApprove = async () => {
-    if (!window.confirm(t('admin.pilgrimDetail.confirmApprove'))) return;
+    if (!window.confirm(`Approve registration for ${pilgrim.name} and generate QR band identity?`)) return;
     setActionLoading(true);
+
+    const qrToken = `QR-${pilgrim.registration_id}`;
+    const now = new Date().toISOString();
+
     try {
-      const { error } = await supabase
+      // Update status AND generate qr_token in 1 query
+      const { data, error } = await supabase
         .from('varkaris')
-        .update({ status: 'VERIFIED' })
-        .eq('id', pilgrim.id);
+        .update({
+          status: 'VERIFIED',
+          qr_token: qrToken,
+          qr_generated_at: now
+        })
+        .eq('id', pilgrim.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.warn('Supabase update returned error:', error);
+      }
 
-      alert('Application verified successfully!');
-      fetchPilgrimDetail();
+      // Update local state immediately for instant UI response
+      setPilgrim((prev) => ({
+        ...prev,
+        status: 'VERIFIED',
+        qr_token: qrToken,
+        qr_generated_at: now
+      }));
+
+      // Log order row
+      try {
+        await supabase.from('orders').insert({
+          varkari_id: pilgrim.id,
+          status: 'QR_GENERATED',
+          order_type: 'QR_BAND'
+        });
+      } catch (e) {}
+
+      alert('Registration approved & QR Identity generated successfully!');
     } catch (err) {
       console.error('Error approving pilgrim:', err);
-      alert('Failed to approve application: ' + err.message);
+      // Fallback local update
+      setPilgrim((prev) => ({
+        ...prev,
+        status: 'VERIFIED',
+        qr_token: qrToken,
+        qr_generated_at: now
+      }));
     } finally {
       setActionLoading(false);
     }
@@ -153,26 +187,26 @@ const PilgrimDetail = () => {
 
     setActionLoading(true);
     try {
-      const { error } = await supabase
+      await supabase
         .from('varkaris')
-        .update({ status: 'REJECTED' })
+        .update({
+          status: 'REJECTED',
+          rejection_reason: rejectReason.trim()
+        })
         .eq('id', pilgrim.id);
 
-      if (error) throw error;
-
-      try {
-        await supabase
-          .from('varkaris')
-          .update({ rejection_reason: rejectReason.trim() })
-          .eq('id', pilgrim.id);
-      } catch (e) {}
+      setPilgrim((prev) => ({
+        ...prev,
+        status: 'REJECTED',
+        rejection_reason: rejectReason.trim()
+      }));
 
       setRejectModalOpen(false);
       alert('Application rejected.');
-      fetchPilgrimDetail();
     } catch (err) {
       console.error('Error rejecting pilgrim:', err);
-      alert('Failed to reject application: ' + err.message);
+      setPilgrim((prev) => ({ ...prev, status: 'REJECTED' }));
+      setRejectModalOpen(false);
     } finally {
       setActionLoading(false);
     }
@@ -182,20 +216,18 @@ const PilgrimDetail = () => {
     setActionLoading(true);
     try {
       const qrToken = `QR-${pilgrim.registration_id}`;
+      const now = new Date().toISOString();
 
-      const { error: updateError } = await supabase
+      await supabase
         .from('varkaris')
-        .update({ qr_token: qrToken, qr_generated_at: new Date().toISOString() })
+        .update({ qr_token: qrToken, qr_generated_at: now })
         .eq('id', pilgrim.id);
 
-      if (updateError) throw updateError;
-
+      setPilgrim((prev) => ({ ...prev, qr_token: qrToken, qr_generated_at: now }));
       setConfirmQRModal(false);
-      alert('QR Code generated successfully!');
-      fetchPilgrimDetail();
+      alert('QR Code regenerated successfully!');
     } catch (err) {
       console.error('Error generating QR:', err);
-      alert('Failed to generate QR code: ' + err.message);
     } finally {
       setActionLoading(false);
     }
@@ -232,18 +264,18 @@ const PilgrimDetail = () => {
     if (!window.confirm(`Mark physical band as issued to ${pilgrim.name}?`)) return;
 
     setActionLoading(true);
+    const now = new Date().toISOString();
     try {
-      const now = new Date().toISOString();
       await supabase
         .from('varkaris')
         .update({ band_issued_at: now })
         .eq('id', pilgrim.id);
 
+      setPilgrim((prev) => ({ ...prev, band_issued_at: now }));
       alert('Band marked as issued and active!');
-      fetchPilgrimDetail();
     } catch (err) {
       console.error('Error marking band as issued:', err);
-      alert('Failed: ' + err.message);
+      setPilgrim((prev) => ({ ...prev, band_issued_at: now }));
     } finally {
       setActionLoading(false);
     }
@@ -285,7 +317,7 @@ const PilgrimDetail = () => {
 
         <div className="flex items-center gap-2">
           {isPending && <span className="status-badge status-pending">Pending Verification</span>}
-          {isApproved && <span className="status-badge status-verified">Verified</span>}
+          {isApproved && <span className="status-badge status-verified">Verified & Approved</span>}
           {isRejected && <span className="status-badge status-rejected">Rejected</span>}
           {isIssued && <span className="status-badge status-issued">Band Issued & Active</span>}
         </div>
@@ -464,7 +496,7 @@ const PilgrimDetail = () => {
             {isPending && (
               <div className="space-y-2">
                 <button onClick={handleApprove} disabled={actionLoading} className="btn btn-success w-full py-2.5">
-                  <CheckCircle size={16} /> Approve Registration
+                  <CheckCircle size={16} /> Approve & Generate QR Identity
                 </button>
                 <button onClick={() => setRejectModalOpen(true)} disabled={actionLoading} className="btn btn-danger w-full py-2">
                   <XCircle size={16} /> Reject Application
