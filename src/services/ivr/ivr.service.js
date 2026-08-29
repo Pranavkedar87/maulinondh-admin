@@ -1,12 +1,9 @@
 import { supabase } from '../supabase.js';
 
 export const EMERGENCY_TYPES = {
-  '1': { id: 'MEDICAL', priority: 'HIGH' },
-  '2': { id: 'LOST_AND_FOUND', priority: 'HIGH' },
-  '3': { id: 'SOS', priority: 'CRITICAL' },
-  '4': { id: 'FIRE', priority: 'CRITICAL' },
-  '5': { id: 'ACCIDENT', priority: 'CRITICAL' },
-  '6': { id: 'OTHER', priority: 'STANDARD' }
+  '1': { id: 'POLICE', priority: 'CRITICAL' },
+  '2': { id: 'MEDICAL', priority: 'HIGH' },
+  '3': { id: 'OTHER', priority: 'STANDARD' }
 };
 
 export const LANGUAGES = {

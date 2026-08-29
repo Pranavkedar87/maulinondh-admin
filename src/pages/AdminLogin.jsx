@@ -7,14 +7,14 @@ import { Shield, Lock, Mail, Sparkles } from 'lucide-react';
 const AdminLogin = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('admin@maulinondh.com');
+  const [email, setEmail] = useState('admin@maulinode.com');
   const [password, setPassword] = useState('••••••••');
   const [rememberMe, setRememberMe] = useState(true);
 
   // 100% Direct Fail-Proof Admin Sign In
   const handleLogin = (e) => {
     e?.preventDefault();
-    localStorage.setItem('maulinondh_admin_demo', 'true');
+    localStorage.setItem('maulinode_admin_demo', 'true');
     navigate('/overview');
   };
 
@@ -65,7 +65,7 @@ const AdminLogin = () => {
                   className="input"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@maulinondh.com"
+                  placeholder="admin@maulinode.com"
                   required
                 />
               </div>
@@ -121,7 +121,7 @@ const AdminLogin = () => {
       </main>
 
       <footer className="text-center p-4 text-xs" style={{ color: 'var(--text-muted)' }}>
-        © 2026 Maulinondh Safety Operations Console — All Rights Reserved.
+        © 2026 MAULINOND Safety Operations Console — All Rights Reserved.
       </footer>
     </div>
   );

@@ -242,7 +242,7 @@ const PublicQRScan = ({ regIdParam }) => {
       <header style={{ background: '#ea580c', color: '#ffffff', padding: '1rem 1.25rem', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 2px 8px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.1rem', fontFamily: 'Outfit, sans-serif' }}>
           <Shield size={22} color="#ffffff" />
-          <span>MAULINONDH</span>
+          <span>MAULINOND</span>
         </div>
         <span style={{ background: '#c2410c', fontSize: '0.7rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '9999px', letterSpacing: '0.05em' }}>
           SAFETY IDENTITY
@@ -564,7 +564,7 @@ const PublicQRScan = ({ regIdParam }) => {
         </div>
 
         <footer style={{ textAlign: 'center', fontSize: '0.75rem', color: '#94a3b8', paddingTop: '1.5rem' }}>
-          Verified Maulinondh Safety Record • Google Maps Geocoding Integration
+          Verified MAULINOND Safety Record • Google Maps Geocoding Integration
         </footer>
       </main>
     </div>

@@ -11,9 +11,9 @@
   --text-muted: #64748b;      /* Muted gray subtext */
   --border: #e2e8f0;          /* Clean border lines */
   
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
   --radius-full: 9999px;
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -179,7 +179,7 @@ a:hover {
 .card {
   background: var(--surface);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
 }

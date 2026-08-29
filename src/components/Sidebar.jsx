@@ -25,13 +25,14 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const navItems = [
-    { path: '/overview', label: '1. Overview', icon: LayoutDashboard },
-    { path: '/registrations', label: '2. Registrations', icon: Users },
-    { path: '/qr-tracking', label: '3. QR & Tracking', icon: QrCode },
-    { path: '/verification', label: '4. Verification', icon: CheckCheck },
-    { path: '/alerts', label: '5. Alerts', icon: AlertTriangle },
-    { path: '/reports', label: '6. Reports', icon: FileBarChart },
-    { path: '/settings', label: '7. Settings', icon: Settings },
+    { path: '/overview', label: 'Overview', icon: LayoutDashboard },
+    { path: '/registrations', label: 'Registrations', icon: Users },
+    { path: '/verification', label: 'Verification', icon: CheckCheck },
+    { path: '/alerts', label: 'Alerts & Emergencies', icon: AlertTriangle },
+    { path: '/analytics', label: 'Analytics', icon: FileBarChart },
+    { path: '/reports', label: 'Reports', icon: FileBarChart },
+    { path: '/qr-tracking', label: 'QR / Identification', icon: QrCode },
+    { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -39,7 +40,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <div className="sidebar-header">
         <div className="sidebar-brand">
           <Shield size={22} color="var(--primary)" />
-          <span>MAULINONDH</span>
+          <span>MAULINOND</span>
           <span style={{ fontSize: '0.65rem', background: 'var(--primary-light)', color: 'var(--primary-dark)', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 700 }}>ADMIN</span>
         </div>
         {onClose && (

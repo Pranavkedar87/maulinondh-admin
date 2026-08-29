@@ -62,7 +62,7 @@ const Settings = () => {
               className="input font-mono text-xs"
               value={qrBaseUrl}
               onChange={(e) => setQrBaseUrl(e.target.value)}
-              placeholder="https://maulinondh.com"
+              placeholder="https://maulinode.com"
             />
             <span className="text-xs text-slate-400">Determines the secure public URL encoded in generated QR codes (e.g. <code>{qrBaseUrl}/u/REG10234</code>).</span>
           </div>
@@ -80,7 +80,7 @@ const Settings = () => {
             </div>
             <div>
               <span className="text-slate-400 block">EMAIL SESSION</span>
-              <span className="font-semibold">{session?.user?.email || 'admin@maulinondh.com'}</span>
+              <span className="font-semibold">{session?.user?.email || 'admin@maulinode.com'}</span>
             </div>
           </div>
         </div>

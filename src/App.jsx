@@ -12,6 +12,7 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import PublicQRScan from './pages/PublicQRScan';
 import IvrDemo from './pages/IvrDemo';
+import Analytics from './pages/Analytics';
 
 function App() {
   const location = useLocation();
@@ -89,6 +90,16 @@ function App() {
         element={
           <ProtectedRoute>
             <Alerts />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 5. Analytics */}
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <Analytics />
           </ProtectedRoute>
         }
       />

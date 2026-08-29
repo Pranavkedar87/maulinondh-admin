@@ -13,7 +13,7 @@ const Reports = () => {
     setExporting(true);
     try {
       let dataToExport = [];
-      let filename = `Maulinondh_${reportType}_Report.csv`;
+      let filename = `MAULINOND_${reportType}_Report.csv`;
 
       if (reportType === 'REGISTRATION' || reportType === 'VERIFICATION') {
         const { data } = await supabase.from('varkaris').select('registration_id, name, age, gender, phone, district, blood_group, status, created_at');
