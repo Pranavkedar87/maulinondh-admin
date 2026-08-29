@@ -16,9 +16,6 @@ import {
   User,
   Heart,
   PhoneCall,
-  Compass,
-  AlertTriangle,
-  Clock,
   Download,
   Copy,
   RotateCw,
@@ -55,7 +52,6 @@ const PilgrimDetail = () => {
       if (error) throw error;
       setPilgrim(data);
 
-      // Fetch Scan Logs for this pilgrim
       const { data: scans } = await supabase
         .from('qr_scans')
         .select('*')
@@ -76,7 +72,15 @@ const PilgrimDetail = () => {
     fetchPilgrimDetail();
   }, [id]);
 
-  const qrSecureUrl = pilgrim ? `${window.location.origin}/u/${pilgrim.registration_id}` : '';
+  // Generate QR URL with correct subpath for GitHub Pages
+  const getQRScanUrl = (regId) => {
+    const origin = window.location.origin;
+    const base = import.meta.env.BASE_URL || '/';
+    const cleanBase = base.endsWith('/') ? base : `${base}/`;
+    return `${origin}${cleanBase}u/${regId}`;
+  };
+
+  const qrSecureUrl = pilgrim ? getQRScanUrl(pilgrim.registration_id) : '';
 
   const getExactGoogleMapsUrl = (log) => {
     if (log.latitude && log.longitude) {
@@ -185,14 +189,6 @@ const PilgrimDetail = () => {
         .eq('id', pilgrim.id);
 
       if (updateError) throw updateError;
-
-      try {
-        await supabase.from('orders').insert({
-          varkari_id: pilgrim.id,
-          status: 'QR_GENERATED',
-          order_type: 'QR_BAND'
-        });
-      } catch (e) {}
 
       setConfirmQRModal(false);
       alert('QR Code generated successfully!');
@@ -398,7 +394,7 @@ const PilgrimDetail = () => {
             </div>
           </div>
 
-          {/* SCAN LOCATION HISTORY CARD WITH OFFICIAL GOOGLE MAPS PIN LINK */}
+          {/* SCAN LOCATION HISTORY CARD */}
           <div className="card" style={{ borderLeft: '4px solid #2563eb' }}>
             <h3 className="mb-3 text-base font-bold flex items-center gap-2 text-slate-800">
               <MapPin size={18} className="text-blue-600" /> Geolocation & Scan History ({scanLogs.length} Scans)
@@ -458,7 +454,7 @@ const PilgrimDetail = () => {
 
         </div>
 
-        {/* Right Column */}
+        {/* Right Column: Admin Actions & Secure QR Code */}
         <div className="flex flex-col gap-6">
 
           {/* Admin Actions */}
@@ -530,7 +526,7 @@ const PilgrimDetail = () => {
               </div>
 
               <a
-                href={`/u/${pilgrim.registration_id}`}
+                href={qrSecureUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="text-xs text-orange-600 font-semibold inline-flex items-center gap-1 justify-center hover:underline pt-2"
