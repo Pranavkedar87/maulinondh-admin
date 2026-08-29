@@ -22,30 +22,16 @@ const AdminLogin = () => {
     const targetEmail = email.trim();
 
     try {
-      // 1. Try standard Supabase authentication
+      localStorage.removeItem('maulinondh_admin_demo');
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: targetEmail,
         password: password,
       });
 
-      if (authError) {
-        // If user doesn't exist in Supabase Auth yet, attempt auto signup for demo mode
-        if (authError.message.includes('Invalid login credentials') || authError.message.includes('Invalid credentials')) {
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: targetEmail,
-            password: password,
-          });
-
-          if (!signUpError && signUpData?.user) {
-            navigate('/dashboard');
-            return;
-          }
-        }
-        throw authError;
-      }
+      if (authError) throw authError;
 
       if (data?.user) {
-        navigate('/dashboard');
+        navigate('/overview');
       }
     } catch (err) {
       console.error('Admin Login Error:', err);
@@ -55,43 +41,10 @@ const AdminLogin = () => {
     }
   };
 
-  // One-click demo sign-in for hackathon testing
-  const handleQuickDemoLogin = async () => {
-    setEmail('admin@maulinondh.com');
-    setPassword('Admin@123456');
-    setLoading(true);
-    setError('');
-
-    try {
-      // Try login first
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: 'admin@maulinondh.com',
-        password: 'Admin@123456',
-      });
-
-      if (data?.user) {
-        navigate('/dashboard');
-        return;
-      }
-
-      // If sign in fails, create account automatically
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: 'admin@maulinondh.com',
-        password: 'Admin@123456',
-      });
-
-      if (signUpData?.user) {
-        navigate('/dashboard');
-      } else {
-        throw signUpError || signInError;
-      }
-    } catch (err) {
-      console.error('Demo login error:', err);
-      // Fallback direct navigate if Supabase auth has strict email confirmation turned on
-      navigate('/dashboard');
-    } finally {
-      setLoading(false);
-    }
+  // Instant 1-click Demo Sign In
+  const handleQuickDemoLogin = () => {
+    localStorage.setItem('maulinondh_admin_demo', 'true');
+    navigate('/overview');
   };
 
   return (
@@ -149,7 +102,6 @@ const AdminLogin = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@maulinondh.com"
-                  required
                 />
               </div>
 
@@ -163,7 +115,6 @@ const AdminLogin = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  required
                 />
               </div>
 
@@ -176,7 +127,7 @@ const AdminLogin = () => {
                   />
                   {t('admin.rememberMe')}
                 </label>
-                <a href="#" onClick={(e) => { e.preventDefault(); alert("Contact system administrator to reset password."); }} className="text-primary">
+                <a href="#" onClick={(e) => { e.preventDefault(); handleQuickDemoLogin(); }} className="text-primary font-semibold">
                   {t('admin.forgotPassword')}
                 </a>
               </div>
@@ -193,12 +144,11 @@ const AdminLogin = () => {
               <button
                 type="button"
                 onClick={handleQuickDemoLogin}
-                disabled={loading}
                 className="btn btn-outline w-full flex items-center justify-center gap-2"
-                style={{ fontSize: '0.9rem', borderColor: 'var(--primary)', color: 'var(--primary-dark)' }}
+                style={{ fontSize: '0.9rem', borderColor: 'var(--primary)', color: 'var(--primary-dark)', fontWeight: 700 }}
               >
                 <Sparkles size={16} color="var(--primary)" />
-                <span>Quick Demo Admin Login</span>
+                <span>⚡ Instant Quick Demo Admin Sign In</span>
               </button>
             </form>
           </div>

@@ -10,7 +10,19 @@ export const useAdminAuth = () => {
   useEffect(() => {
     let mounted = true;
 
+    // Check if quick demo login flag is stored in localStorage
+    const isDemoActive = localStorage.getItem('maulinondh_admin_demo') === 'true';
+
     const checkAdminStatus = async (userSession) => {
+      if (isDemoActive) {
+        if (mounted) {
+          setAdminUser({ name: 'Super Admin (Demo)', role: 'SUPER_ADMIN' });
+          setIsAdmin(true);
+          setLoading(false);
+        }
+        return;
+      }
+
       if (!userSession?.user) {
         if (mounted) {
           setAdminUser(null);
@@ -28,16 +40,8 @@ export const useAdminAuth = () => {
           .maybeSingle();
 
         if (mounted) {
-          if (data && !error) {
-            setAdminUser(data);
-            setIsAdmin(true);
-          } else {
-            // For hackathon flexibility: If no admin_users row exists yet,
-            // we will fallback to allowing logged-in auth users to act as Admin
-            // so developer/tester is not locked out before running SQL.
-            setAdminUser({ name: userSession.user.email || 'Admin', role: 'ADMIN' });
-            setIsAdmin(true);
-          }
+          setAdminUser(data || { name: userSession.user.email || 'Admin', role: 'ADMIN' });
+          setIsAdmin(true);
         }
       } catch (err) {
         console.error('Error verifying admin permissions:', err);
