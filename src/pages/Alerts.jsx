@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../services/supabase';
-import { AlertTriangle, RefreshCw, Eye, CheckCircle2, Phone } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Eye, CheckCircle2, Phone, MapPin } from 'lucide-react';
 
 const Alerts = () => {
   const navigate = useNavigate();
@@ -61,7 +61,9 @@ const Alerts = () => {
         status: a.status,
         created_at: a.created_at,
         varkari: a.varkaris,
-        reporter_phone: null
+        reporter_phone: null,
+        latitude: a.latitude,
+        longitude: a.longitude
       }));
 
       const normalizedIncidents = (incidentsData || []).map(i => ({
@@ -75,7 +77,9 @@ const Alerts = () => {
         status: i.status,
         created_at: i.created_at,
         varkari: i.varkaris,
-        reporter_phone: i.reporter_phone
+        reporter_phone: i.reporter_phone,
+        latitude: i.latitude,
+        longitude: i.longitude
       }));
 
       const combined = [...normalizedQrAlerts, ...normalizedIncidents].sort(
@@ -205,6 +209,19 @@ const Alerts = () => {
                 </div>
                 
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    onClick={() => {
+                      if (alert.latitude && alert.longitude) {
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${alert.latitude},${alert.longitude}`, '_blank');
+                      } else {
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(alert.location)}`, '_blank');
+                      }
+                    }}
+                    className="btn btn-outline"
+                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', color: '#ea580c', borderColor: '#fed7aa', background: '#fff7ed' }}
+                  >
+                    <MapPin size={14} /> View Map
+                  </button>
                   {alert.varkari?.id && (
                     <button
                       onClick={() => navigate(`/registrations/${alert.varkari.id}`)}
