@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
 import AdminOverview from './pages/AdminOverview';
@@ -13,9 +13,17 @@ import Settings from './pages/Settings';
 import PublicQRScan from './pages/PublicQRScan';
 
 function App() {
+  const location = useLocation();
+
+  // If mobile scan URL was opened, extract regId even if path matching has query parameters
+  const matchRegId = location.pathname.match(/\/u\/([^\/]+)/);
+  if (matchRegId && matchRegId[1] && !location.pathname.startsWith('/u/')) {
+    return <PublicQRScan regIdParam={matchRegId[1]} />;
+  }
+
   return (
     <Routes>
-      {/* Public QR Scanner Landing Page (Opened when mobile camera scans QR code) */}
+      {/* Public QR Scanner Landing Page */}
       <Route path="/u/:regId" element={<PublicQRScan />} />
 
       {/* Admin Authentication */}

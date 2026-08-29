@@ -3,8 +3,10 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 import { Shield, PhoneCall, Heart, AlertTriangle, MapPin, User, FileText, CheckCircle2, Navigation } from 'lucide-react';
 
-const PublicQRScan = () => {
-  const { regId } = useParams();
+const PublicQRScan = ({ regIdParam }) => {
+  const { regId: routeRegId } = useParams();
+  const regId = routeRegId || regIdParam;
+
   const [pilgrim, setPilgrim] = useState(null);
   const [loading, setLoading] = useState(true);
   const [locationStatus, setLocationStatus] = useState('Detecting current device location...');
@@ -16,7 +18,6 @@ const PublicQRScan = () => {
 
   const googleMapsKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyCSut4ogDQ24FaPUn3C4RmRLYHGGAw2I1U';
 
-  // 1. Google Maps Reverse Geocoding
   const reverseGeocode = async (lat, lng) => {
     try {
       const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleMapsKey}`);
@@ -30,7 +31,6 @@ const PublicQRScan = () => {
     return `GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   };
 
-  // 2. Fetch Real Device Coordinates (HTML5 GPS + Real IP Fallback)
   const getRealDeviceCoordinates = () => {
     return new Promise((resolve) => {
       if ('geolocation' in navigator) {
@@ -39,7 +39,7 @@ const PublicQRScan = () => {
             resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, method: 'GPS' });
           },
           async (err) => {
-            console.warn('Browser HTML5 Geolocation unavailable or denied, trying IP geolocation...', err);
+            console.warn('Browser HTML5 Geolocation unavailable, trying IP fallback...', err);
             try {
               const ipRes = await fetch('https://ipapi.co/json/');
               const ipData = await ipRes.json();
@@ -67,7 +67,6 @@ const PublicQRScan = () => {
     });
   };
 
-  // 3. Process and transmit real location to Supabase
   const processAndTransmitLocation = async (scanId, varkariObj) => {
     setFetchingLocation(true);
     setLocationStatus('Detecting precise device coordinates...');
@@ -81,7 +80,6 @@ const PublicQRScan = () => {
       setPermissionGranted(true);
       setLocationStatus(`📍 Detected Location: ${address}`);
 
-      // Save to Supabase
       if (scanId) {
         try {
           await supabase
@@ -117,9 +115,9 @@ const PublicQRScan = () => {
     setFetchingLocation(false);
   };
 
-  // 4. Initial scan log on page mount
   useEffect(() => {
     const initializeScan = async () => {
+      if (!regId) return;
       setLoading(true);
       setErrorMessage(null);
       try {
@@ -132,7 +130,6 @@ const PublicQRScan = () => {
         if (error) throw error;
         setPilgrim(data);
 
-        // Insert initial scan row
         const { data: scanRow, error: scanErr } = await supabase
           .from('qr_scans')
           .insert({
@@ -154,7 +151,6 @@ const PublicQRScan = () => {
           }
         } else if (scanRow) {
           setCurrentScanId(scanRow.id);
-          // Process real location
           await processAndTransmitLocation(scanRow.id, data);
         }
 
@@ -171,7 +167,7 @@ const PublicQRScan = () => {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', itemsCenter: 'center', justifyCenter: 'center', background: '#f8fafc', padding: '1rem', fontFamily: 'Inter, sans-serif' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '1rem', fontFamily: 'Inter, sans-serif' }}>
         <div style={{ background: '#ffffff', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', textAlign: 'center', maxWidth: '360px', width: '100%' }}>
           <Shield size={40} color="#ea580c" style={{ margin: '0 auto 1rem', animation: 'pulse 1.5s infinite' }} />
           <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Identifying Registered Pilgrim...</h3>
@@ -183,7 +179,7 @@ const PublicQRScan = () => {
 
   if (!pilgrim) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', itemsCenter: 'center', justifyCenter: 'center', background: '#f8fafc', padding: '1rem', fontFamily: 'Inter, sans-serif' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '1rem', fontFamily: 'Inter, sans-serif' }}>
         <div style={{ background: '#ffffff', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', textAlign: 'center', maxWidth: '360px', width: '100%' }}>
           <AlertTriangle size={40} color="#ef4444" style={{ margin: '0 auto 1rem' }} />
           <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>Invalid Safety QR</h3>
@@ -197,7 +193,7 @@ const PublicQRScan = () => {
     <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: 'Inter, sans-serif', paddingBottom: '2.5rem' }}>
       
       {/* Top Header Bar */}
-      <header style={{ background: '#ea580c', color: '#ffffff', padding: '1rem 1.25rem', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 2px 8px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', justifyBetween: 'space-between' }}>
+      <header style={{ background: '#ea580c', color: '#ffffff', padding: '1rem 1.25rem', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 2px 8px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.1rem', fontFamily: 'Outfit, sans-serif' }}>
           <Shield size={22} color="#ffffff" />
           <span>MAULINONDH</span>
@@ -207,7 +203,7 @@ const PublicQRScan = () => {
         </span>
       </header>
 
-      {/* Main Container */}
+      {/* Main Mobile Container */}
       <main style={{ maxWidth: '440px', margin: '1.25rem auto 0', padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         
         {errorMessage && (
@@ -225,7 +221,7 @@ const PublicQRScan = () => {
               style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto 0.75rem', border: '3px solid #ea580c', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}
             />
           ) : (
-            <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: '#ffedd5', color: '#c2410c', fontWeight: 'bold', fontSize: '2.2rem', display: 'flex', alignItems: 'center', justifyCenter: 'center', margin: '0 auto 0.75rem', border: '3px solid #ea580c' }}>
+            <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: '#ffedd5', color: '#c2410c', fontWeight: 'bold', fontSize: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem', border: '3px solid #ea580c' }}>
               {pilgrim.name?.charAt(0) || 'P'}
             </div>
           )}
@@ -319,7 +315,7 @@ const PublicQRScan = () => {
               <div style={{ fontSize: '1.05rem', marginTop: '0.1rem' }}>{pilgrim.guardian_name}</div>
               <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>{pilgrim.guardian_phone}</div>
             </div>
-            <div style={{ background: '#15803d', padding: '0.6rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyCenter: 'center' }}>
+            <div style={{ background: '#15803d', padding: '0.6rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <PhoneCall size={20} color="#ffffff" />
             </div>
           </a>
@@ -344,7 +340,7 @@ const PublicQRScan = () => {
                 <div style={{ fontSize: '1rem', marginTop: '0.1rem' }}>{pilgrim.secondary_guardian_name}</div>
                 <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{pilgrim.secondary_guardian_phone}</div>
               </div>
-              <div style={{ background: '#334155', padding: '0.6rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyCenter: 'center' }}>
+              <div style={{ background: '#334155', padding: '0.6rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <PhoneCall size={18} color="#ffffff" />
               </div>
             </a>
@@ -358,19 +354,19 @@ const PublicQRScan = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem' }}>
-            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Blood Group:</span>
               <span style={{ fontWeight: 800, color: '#dc2626' }}>{pilgrim.blood_group}</span>
             </div>
-            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Medical Conditions:</span>
               <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.medical_conditions || 'None'}</span>
             </div>
-            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Current Medications:</span>
               <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.medications || 'None'}</span>
             </div>
-            <div style={{ display: 'flex', justifyBetween: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: '#64748b' }}>Known Allergies:</span>
               <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.allergies || 'None'}</span>
             </div>
@@ -384,21 +380,21 @@ const PublicQRScan = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem' }}>
-            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>District / Address:</span>
               <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.district || pilgrim.address}</span>
             </div>
-            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Participating With:</span>
               <span style={{ fontWeight: 600, color: '#0f172a', textTransform: 'capitalize' }}>{pilgrim.participating_with}</span>
             </div>
             {pilgrim.dindi_name && (
-              <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
                 <span style={{ color: '#64748b' }}>Dindi / Group Name:</span>
                 <span style={{ fontWeight: 600, color: '#0f172a' }}>{pilgrim.dindi_name}</span>
               </div>
             )}
-            <div style={{ display: 'flex', justifyBetween: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: '#64748b' }}>Verification Status:</span>
               <span style={{ background: '#dcfce7', color: '#15803d', fontWeight: 700, fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
                 {pilgrim.status}
