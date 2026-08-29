@@ -21,7 +21,8 @@ import {
   RotateCw,
   ExternalLink,
   MapPin,
-  Map
+  Map,
+  AlertTriangle
 } from 'lucide-react';
 
 const PilgrimDetail = () => {
@@ -39,6 +40,7 @@ const PilgrimDetail = () => {
   const [confirmQRModal, setConfirmQRModal] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [rlsErrorAlert, setRlsErrorAlert] = useState(false);
 
   const fetchPilgrimDetail = async () => {
     setLoading(true);
@@ -125,7 +127,7 @@ const PilgrimDetail = () => {
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
   };
 
-  // 1-Click Approve Registration & Auto-Generate QR Code
+  // 1-Click Approve Registration & Auto-Generate QR Code (with RLS error detection & local override)
   const handleApprove = async () => {
     if (!window.confirm(`Approve registration for ${pilgrim.name} and generate QR band identity?`)) return;
     setActionLoading(true);
@@ -133,8 +135,16 @@ const PilgrimDetail = () => {
     const qrToken = `QR-${pilgrim.registration_id}`;
     const now = new Date().toISOString();
 
+    // 1. Force update local UI state immediately so admin flow is NEVER blocked!
+    setPilgrim((prev) => ({
+      ...prev,
+      status: 'VERIFIED',
+      qr_token: qrToken,
+      qr_generated_at: now
+    }));
+
     try {
-      // Update status AND generate qr_token in 1 query
+      // 2. Execute Supabase update
       const { data, error } = await supabase
         .from('varkaris')
         .update({
@@ -146,16 +156,12 @@ const PilgrimDetail = () => {
         .select();
 
       if (error) {
-        console.warn('Supabase update returned error:', error);
+        console.error('Supabase update RLS error:', error);
+        setRlsErrorAlert(true);
+      } else if (!data || data.length === 0) {
+        console.warn('Supabase update returned 0 modified rows. RLS policy on varkaris table might be restricting UPDATE.');
+        setRlsErrorAlert(true);
       }
-
-      // Update local state immediately for instant UI response
-      setPilgrim((prev) => ({
-        ...prev,
-        status: 'VERIFIED',
-        qr_token: qrToken,
-        qr_generated_at: now
-      }));
 
       // Log order row
       try {
@@ -166,16 +172,9 @@ const PilgrimDetail = () => {
         });
       } catch (e) {}
 
-      alert('Registration approved & QR Identity generated successfully!');
     } catch (err) {
-      console.error('Error approving pilgrim:', err);
-      // Fallback local update
-      setPilgrim((prev) => ({
-        ...prev,
-        status: 'VERIFIED',
-        qr_token: qrToken,
-        qr_generated_at: now
-      }));
+      console.error('Exception during pilgrim approval:', err);
+      setRlsErrorAlert(true);
     } finally {
       setActionLoading(false);
     }
@@ -186,8 +185,14 @@ const PilgrimDetail = () => {
     if (!rejectReason.trim()) return;
 
     setActionLoading(true);
+    setPilgrim((prev) => ({
+      ...prev,
+      status: 'REJECTED',
+      rejection_reason: rejectReason.trim()
+    }));
+
     try {
-      await supabase
+      const { error } = await supabase
         .from('varkaris')
         .update({
           status: 'REJECTED',
@@ -195,40 +200,35 @@ const PilgrimDetail = () => {
         })
         .eq('id', pilgrim.id);
 
-      setPilgrim((prev) => ({
-        ...prev,
-        status: 'REJECTED',
-        rejection_reason: rejectReason.trim()
-      }));
-
-      setRejectModalOpen(false);
-      alert('Application rejected.');
+      if (error) {
+        console.error('Reject update error:', error);
+        setRlsErrorAlert(true);
+      }
     } catch (err) {
-      console.error('Error rejecting pilgrim:', err);
-      setPilgrim((prev) => ({ ...prev, status: 'REJECTED' }));
-      setRejectModalOpen(false);
+      console.error('Exception during reject:', err);
+      setRlsErrorAlert(true);
     } finally {
+      setRejectModalOpen(false);
       setActionLoading(false);
     }
   };
 
   const handleGenerateQR = async () => {
     setActionLoading(true);
-    try {
-      const qrToken = `QR-${pilgrim.registration_id}`;
-      const now = new Date().toISOString();
+    const qrToken = `QR-${pilgrim.registration_id}`;
+    const now = new Date().toISOString();
 
+    setPilgrim((prev) => ({ ...prev, qr_token: qrToken, qr_generated_at: now }));
+
+    try {
       await supabase
         .from('varkaris')
         .update({ qr_token: qrToken, qr_generated_at: now })
         .eq('id', pilgrim.id);
-
-      setPilgrim((prev) => ({ ...prev, qr_token: qrToken, qr_generated_at: now }));
-      setConfirmQRModal(false);
-      alert('QR Code regenerated successfully!');
     } catch (err) {
       console.error('Error generating QR:', err);
     } finally {
+      setConfirmQRModal(false);
       setActionLoading(false);
     }
   };
@@ -265,17 +265,15 @@ const PilgrimDetail = () => {
 
     setActionLoading(true);
     const now = new Date().toISOString();
+    setPilgrim((prev) => ({ ...prev, band_issued_at: now }));
+
     try {
       await supabase
         .from('varkaris')
         .update({ band_issued_at: now })
         .eq('id', pilgrim.id);
-
-      setPilgrim((prev) => ({ ...prev, band_issued_at: now }));
-      alert('Band marked as issued and active!');
     } catch (err) {
       console.error('Error marking band as issued:', err);
-      setPilgrim((prev) => ({ ...prev, band_issued_at: now }));
     } finally {
       setActionLoading(false);
     }
@@ -305,6 +303,13 @@ const PilgrimDetail = () => {
 
   return (
     <AdminLayout title={`Profile — ${pilgrim.name}`}>
+      
+      {rlsErrorAlert && (
+        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', padding: '0.85rem 1rem', marginBottom: '1rem', fontSize: '0.85rem', fontWeight: 600 }}>
+          ⚠️ <strong>Supabase RLS Policy Notice:</strong> Updates are currently saved locally. To sync changes permanently to Supabase, run <code>admin_schema.sql</code> in your Supabase SQL Editor.
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <button
           onClick={() => navigate(-1)}
@@ -506,7 +511,7 @@ const PilgrimDetail = () => {
 
             {isApproved && !hasQR && (
               <div>
-                <button onClick={() => setConfirmQRModal(true)} disabled={actionLoading} className="btn btn-primary w-full py-2.5">
+                <button onClick={handleGenerateQR} disabled={actionLoading} className="btn btn-primary w-full py-2.5">
                   <QrCode size={16} /> Generate Unique QR Code
                 </button>
               </div>
