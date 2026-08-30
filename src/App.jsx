@@ -14,7 +14,9 @@ import Settings from './pages/Settings';
 import PublicQRScan from './pages/PublicQRScan';
 import IvrDemo from './pages/IvrDemo';
 import LiveMap from './pages/LiveMap';
-import { Panchayats, Dindis, IvrManagement } from './pages/Placeholders';
+import TeamLeaders from './pages/TeamLeaders';
+import GramPanchayats from './pages/GramPanchayats';
+import { IvrManagement } from './pages/Placeholders';
 
 // Preserves the :id param when redirecting old routes to new paths
 const RedirectWithId = ({ to }) => {
@@ -74,9 +76,9 @@ function App() {
       <Route path="/registrations/:id" element={<RedirectWithId to="/varkaris" />} />
       <Route path="/pilgrims/:id" element={<Navigate to="/varkaris" replace />} />
 
-      {/* Placeholders */}
-      <Route path="/panchayats" element={<ProtectedRoute><Panchayats /></ProtectedRoute>} />
-      <Route path="/dindis" element={<ProtectedRoute><Dindis /></ProtectedRoute>} />
+      {/* Real Pages for Panchayats & Dindis / Team Leaders */}
+      <Route path="/panchayats" element={<ProtectedRoute><GramPanchayats /></ProtectedRoute>} />
+      <Route path="/dindis" element={<ProtectedRoute><TeamLeaders /></ProtectedRoute>} />
       <Route path="/map" element={<ProtectedRoute><LiveMap /></ProtectedRoute>} />
       <Route path="/ivr" element={<ProtectedRoute><IvrManagement /></ProtectedRoute>} />
 
