@@ -1,37 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../services/supabase';
-import { Search, RefreshCw, Flag } from 'lucide-react';
+import { Search, RefreshCw, Flag, AlertTriangle } from 'lucide-react';
 
 const TeamLeaders = () => {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('ALL');
   const [stats, setStats] = useState({ total: 0, verified: 0, pending: 0 });
 
   const fetchLeaders = async () => {
     setLoading(true);
+    setFetchError(null);
     try {
-      // Fetch exact records from team_leaders table
+      // Query without ordering by created_at in SQL to prevent undefined_column errors
       const { data: tlData, error: tlErr } = await supabase
         .from('team_leaders')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*');
 
-      if (tlErr) console.error('Error fetching team_leaders:', tlErr);
+      if (tlErr) {
+        console.error('Supabase team_leaders fetch error:', tlErr);
+        setFetchError(tlErr.message || JSON.stringify(tlErr));
+      }
 
       const rawList = (tlData || []).map(tl => ({
         id: tl.id,
         registration_id: tl.registration_id || '—',
         name: tl.full_name || tl.name || tl.leader_name || '—',
-        dindi_name: tl.dindi_name || tl.group_name || '—',
-        phone: tl.phone || tl.mobile || tl.contact_phone || '—',
-        district: tl.district || tl.location || '—',
+        dindi_name: tl.dindi_name || tl.group_name || tl.dindi || '—',
+        phone: tl.mobile_number || tl.mobile_num || tl.phone || tl.mobile || tl.contact_phone || '—',
+        district: tl.district || tl.village_name || tl.location || '—',
         status: tl.status || 'VERIFIED',
         generated_password: tl.generated_password || null,
         created_at: tl.created_at || null
       }));
+
+      // Sort in JS safely
+      rawList.sort((a, b) => {
+        if (!a.created_at) return 1;
+        if (!b.created_at) return -1;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
 
       setLeaders(rawList);
 
@@ -45,6 +56,7 @@ const TeamLeaders = () => {
 
     } catch (err) {
       console.error('Error fetching team leaders:', err);
+      setFetchError(err.message || 'Failed to fetch team leaders');
     } finally {
       setLoading(false);
     }
@@ -101,6 +113,13 @@ const TeamLeaders = () => {
         </div>
       </div>
 
+      {fetchError && (
+        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '0.75rem 1rem', borderRadius: '6px', marginBottom: '1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <AlertTriangle size={16} />
+          <span><strong>Database Warning:</strong> {fetchError}. Ensure RLS policies allow SELECT on public.team_leaders.</span>
+        </div>
+      )}
+
       {/* KPI Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="card p-4 border-l-4 border-l-orange-500">
@@ -147,7 +166,7 @@ const TeamLeaders = () => {
                 <th>Registration ID</th>
                 <th>Leader Name</th>
                 <th>Dindi / Group Name</th>
-                <th>Contact Number</th>
+                <th>Mobile Number</th>
                 <th>District / Base</th>
                 <th>Access Code</th>
                 <th>Status</th>

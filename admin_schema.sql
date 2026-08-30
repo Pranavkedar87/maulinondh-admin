@@ -110,3 +110,12 @@ CREATE POLICY "Admins manage qr_alerts" ON public.qr_alerts FOR ALL USING (true)
 
 DROP POLICY IF EXISTS "Admins manage incidents" ON public.incidents;
 CREATE POLICY "Admins manage incidents" ON public.incidents FOR ALL USING (true);
+
+-- 7. Team Leaders & Gram Panchayats RLS
+ALTER TABLE public.team_leaders ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public select team_leaders" ON public.team_leaders;
+CREATE POLICY "Public select team_leaders" ON public.team_leaders FOR SELECT USING (true);
+
+ALTER TABLE public.gram_panchayats ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public select gram_panchayats" ON public.gram_panchayats;
+CREATE POLICY "Public select gram_panchayats" ON public.gram_panchayats FOR SELECT USING (true);
