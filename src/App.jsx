@@ -13,7 +13,8 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import PublicQRScan from './pages/PublicQRScan';
 import IvrDemo from './pages/IvrDemo';
-import { Panchayats, Dindis, LiveMap, IvrManagement } from './pages/Placeholders';
+import LiveMap from './pages/LiveMap';
+import { Panchayats, Dindis, IvrManagement } from './pages/Placeholders';
 
 function App() {
   const location = useLocation();

@@ -19,15 +19,6 @@ export const Dindis = () => (
   </AdminLayout>
 );
 
-export const LiveMap = () => (
-  <AdminLayout title="Live Map">
-    <div className="card text-center p-12" style={{ marginTop: '2rem' }}>
-      <h3 className="text-xl font-bold mb-2 text-slate-800">Map Feed Inactive</h3>
-      <p className="text-slate-500">Live geographic clustering will activate when sufficient location data is available.</p>
-    </div>
-  </AdminLayout>
-);
-
 export const IvrManagement = () => (
   <AdminLayout title="IVR Logs">
     <div className="card text-center p-12" style={{ marginTop: '2rem' }}>
