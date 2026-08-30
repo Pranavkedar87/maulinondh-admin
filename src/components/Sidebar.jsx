@@ -48,7 +48,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         <div className="sidebar-brand">
           <Shield size={20} color="var(--primary)" />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
-            <span style={{ fontSize: '1rem', lineHeight: 1.1 }}>MAULINONDH</span>
+            <span style={{ fontSize: '1rem', lineHeight: 1.1 }}>MAULINOND</span>
             <span style={{ fontSize: '0.6rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>ADMIN COMMAND CENTER</span>
           </div>
         </div>

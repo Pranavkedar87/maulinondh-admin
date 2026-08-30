@@ -71,7 +71,7 @@ const IvrDemo = () => {
             <Phone size={24} color="#38bdf8" />
             <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>IVR DEMO MODE</h1>
           </div>
-          <p style={{ margin: 0, fontSize: '0.9rem', color: '#94a3b8' }}>Browser Simulation of the MAULINONDH Phone Emergency System</p>
+          <p style={{ margin: 0, fontSize: '0.9rem', color: '#94a3b8' }}>Browser Simulation of the MAULINOND Phone Emergency System</p>
         </header>
 
         {/* Content Body */}

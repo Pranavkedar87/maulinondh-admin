@@ -289,7 +289,7 @@ const AdminOverview = () => {
       {/* ── PAGE HEADER ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>MAULINONDH ADMIN COMMAND CENTER</h2>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>MAULINOND ADMIN COMMAND CENTER</h2>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
             Real-time situational awareness · {lastUpdated ? `Updated ${lastUpdated}` : 'Syncing...'}
           </p>

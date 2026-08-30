@@ -132,7 +132,7 @@ const Analytics = () => {
     <AdminLayout title="Analytics">
 
       <div style={{ marginBottom: '1rem' }}>
-        <h2 style={{ fontSize: '1.05rem', fontWeight: 800 }}>MAULINONDH ANALYTICS WORKSPACE</h2>
+        <h2 style={{ fontSize: '1.05rem', fontWeight: 800 }}>MAULINOND ANALYTICS WORKSPACE</h2>
         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Deep operational insights from real Supabase data</p>
       </div>
 

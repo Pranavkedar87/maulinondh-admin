@@ -14,7 +14,7 @@ const AdminLogin = () => {
   // 100% Direct Fail-Proof Admin Sign In
   const handleLogin = (e) => {
     e?.preventDefault();
-    localStorage.setItem('maulinondh_admin_demo', 'true');
+    localStorage.setItem('maulinond_admin_demo', 'true');
     navigate('/overview');
   };
 
@@ -121,7 +121,7 @@ const AdminLogin = () => {
       </main>
 
       <footer className="text-center p-4 text-xs" style={{ color: 'var(--text-muted)' }}>
-        © 2026 MAULINONDH Safety Operations Console — All Rights Reserved.
+        © 2026 MAULINOND Safety Operations Console — All Rights Reserved.
       </footer>
     </div>
   );

@@ -9,12 +9,12 @@ export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('maulinondh_lang') || 'mr';
+    return localStorage.getItem('maulinond_lang') || 'mr';
   });
 
   useEffect(() => {
     if (language) {
-      localStorage.setItem('maulinondh_lang', language);
+      localStorage.setItem('maulinond_lang', language);
     }
   }, [language]);
 
