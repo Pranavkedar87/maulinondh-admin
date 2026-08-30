@@ -1,70 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../services/supabase';
-import { Search, RefreshCw, Home, Building, MapPin, CheckCircle } from 'lucide-react';
+import { Search, RefreshCw, Home } from 'lucide-react';
 
 const GramPanchayats = () => {
   const [panchayats, setPanchayats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('ALL');
   const [stats, setStats] = useState({ total: 0, villages: 0, districts: 0 });
 
   const fetchPanchayats = async () => {
     setLoading(true);
     try {
-      // 1. Fetch from gram_panchayats table
+      // Fetch exact records from gram_panchayats table
       const { data: gpData, error: gpErr } = await supabase
         .from('gram_panchayats')
         .select('*')
         .order('created_at', { ascending: false });
 
-      // 2. Also aggregate from varkaris addresses as fallback/secondary dataset if needed
-      const { data: vData } = await supabase
-        .from('varkaris')
-        .select('district, address')
-        .limit(500);
+      if (gpErr) console.error('Error fetching gram_panchayats:', gpErr);
 
-      let list = (gpData || []).map(gp => ({
+      const list = (gpData || []).map(gp => ({
         id: gp.id,
-        registration_id: gp.registration_id || 'GP-' + gp.id.slice(0, 6).toUpperCase(),
-        panchayat_name: gp.panchayat_name || gp.name || 'Gram Panchayat',
+        registration_id: gp.registration_id || '—',
+        panchayat_name: gp.panchayat_name || gp.name || '—',
         village_name: gp.village_name || gp.village || '—',
-        district: gp.district || gp.location || 'Maharashtra',
+        district: gp.district || gp.location || '—',
         taluka: gp.taluka || '—',
         contact_phone: gp.phone || gp.contact_phone || '—',
         status: gp.status || 'VERIFIED',
-        created_at: gp.created_at || new Date().toISOString()
+        created_at: gp.created_at || null
       }));
-
-      // If gram_panchayats table is empty, aggregate unique villages/districts from varkaris so data is populated!
-      if (list.length === 0 && vData && vData.length > 0) {
-        const aggregatedMap = {};
-        vData.forEach(v => {
-          if (v.district) {
-            const key = v.district.trim();
-            if (!aggregatedMap[key]) {
-              aggregatedMap[key] = {
-                id: 'AGG-' + key,
-                registration_id: 'GP-DIST-' + key.slice(0, 3).toUpperCase(),
-                panchayat_name: `${key} Gram Panchayat Command`,
-                village_name: `${key} Hub`,
-                district: key,
-                taluka: 'Central',
-                contact_phone: '—',
-                status: 'VERIFIED',
-                created_at: new Date().toISOString()
-              };
-            }
-          }
-        });
-        list = Object.values(aggregatedMap);
-      }
 
       setPanchayats(list);
 
-      const uniqueVillages = new Set(list.map(p => p.village_name)).size;
-      const uniqueDistricts = new Set(list.map(p => p.district)).size;
+      const uniqueVillages = new Set(list.map(p => p.village_name).filter(v => v !== '—')).size;
+      const uniqueDistricts = new Set(list.map(p => p.district).filter(d => d !== '—')).size;
 
       setStats({
         total: list.length,
@@ -104,7 +75,7 @@ const GramPanchayats = () => {
             <Home size={20} className="text-purple-600" /> Gram Panchayat Directory
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Registered Gram Panchayats, village nodes, and local administrative safety hubs
+            Real-time records from gram_panchayats database table
           </p>
         </div>
 
@@ -164,12 +135,12 @@ const GramPanchayats = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8 text-slate-500">Loading Gram Panchayat records from Supabase...</td>
+                  <td colSpan="8" className="text-center py-8 text-slate-500">Fetching Gram Panchayat records from Supabase...</td>
                 </tr>
               ) : filteredPanchayats.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center py-10 text-slate-500">
-                    {search ? 'No Gram Panchayats match your search query.' : 'No registered Gram Panchayats found.'}
+                    {search ? 'No Gram Panchayats match your search query.' : 'No registered Gram Panchayats found in database table (gram_panchayats).'}
                   </td>
                 </tr>
               ) : (
@@ -191,7 +162,7 @@ const GramPanchayats = () => {
                       </span>
                     </td>
                     <td className="text-xs text-slate-500 font-mono">
-                      {new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                     </td>
                   </tr>
                 ))

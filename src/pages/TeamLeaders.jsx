@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../services/supabase';
-import { Search, RefreshCw, Eye, Flag, Shield, Users, CheckCircle, Clock } from 'lucide-react';
+import { Search, RefreshCw, Flag } from 'lucide-react';
 
 const TeamLeaders = () => {
   const [leaders, setLeaders] = useState([]);
@@ -13,50 +13,32 @@ const TeamLeaders = () => {
   const fetchLeaders = async () => {
     setLoading(true);
     try {
-      // 1. Fetch from team_leaders table
+      // Fetch exact records from team_leaders table
       const { data: tlData, error: tlErr } = await supabase
         .from('team_leaders')
         .select('*')
         .order('created_at', { ascending: false });
 
-      // 2. Fetch fallback from dindis if present
-      const { data: dindiData } = await supabase
-        .from('dindis')
-        .select('*');
+      if (tlErr) console.error('Error fetching team_leaders:', tlErr);
 
-      let combined = (tlData || []).map(tl => ({
+      const rawList = (tlData || []).map(tl => ({
         id: tl.id,
-        registration_id: tl.registration_id || 'N/A',
-        name: tl.full_name || tl.name || tl.leader_name || 'Leader ' + (tl.registration_id || '').slice(-6),
-        dindi_name: tl.dindi_name || tl.group_name || 'Dindi Group',
+        registration_id: tl.registration_id || '—',
+        name: tl.full_name || tl.name || tl.leader_name || '—',
+        dindi_name: tl.dindi_name || tl.group_name || '—',
         phone: tl.phone || tl.mobile || tl.contact_phone || '—',
-        district: tl.district || tl.location || 'Maharashtra',
+        district: tl.district || tl.location || '—',
         status: tl.status || 'VERIFIED',
         generated_password: tl.generated_password || null,
-        created_at: tl.created_at || new Date().toISOString()
+        created_at: tl.created_at || null
       }));
 
-      if (dindiData && dindiData.length > 0) {
-        const dindiMapped = dindiData.map(d => ({
-          id: d.id,
-          registration_id: d.registration_id || 'DINDI-' + d.id.slice(0, 6).toUpperCase(),
-          name: d.leader_name || d.name || 'Dindi Leader',
-          dindi_name: d.dindi_name || d.name || 'Dindi',
-          phone: d.phone || '—',
-          district: d.district || 'Maharashtra',
-          status: d.status || 'ACTIVE',
-          generated_password: null,
-          created_at: d.created_at || new Date().toISOString()
-        }));
-        combined = [...combined, ...dindiMapped];
-      }
+      setLeaders(rawList);
 
-      setLeaders(combined);
-
-      const ver = combined.filter(l => l.status === 'VERIFIED' || l.status === 'ACTIVE').length;
-      const pend = combined.filter(l => l.status === 'PENDING').length;
+      const ver = rawList.filter(l => l.status === 'VERIFIED' || l.status === 'ACTIVE').length;
+      const pend = rawList.filter(l => l.status === 'PENDING').length;
       setStats({
-        total: combined.length,
+        total: rawList.length,
         verified: ver,
         pending: pend
       });
@@ -97,7 +79,7 @@ const TeamLeaders = () => {
             <Flag size={20} className="text-orange-600" /> Team Leaders & Dindi Registry
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Manage registered Dindi heads, group leaders, and assigned pilgrim contingents
+            Real-time records from team_leaders database table
           </p>
         </div>
 
@@ -107,7 +89,7 @@ const TeamLeaders = () => {
               type="text"
               className="input"
               style={{ height: '36px', paddingLeft: '2rem', fontSize: '0.85rem' }}
-              placeholder="Search Leader, Reg ID, Dindi, Mobile..."
+              placeholder="Search Name, Reg ID, Mobile..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -124,12 +106,12 @@ const TeamLeaders = () => {
         <div className="card p-4 border-l-4 border-l-orange-500">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">TOTAL LEADERS</span>
           <span className="text-2xl font-black text-slate-900">{stats.total}</span>
-          <span className="text-xs text-slate-500 block mt-1">Registered Dindi heads</span>
+          <span className="text-xs text-slate-500 block mt-1">Exact records in team_leaders table</span>
         </div>
         <div className="card p-4 border-l-4 border-l-green-600">
           <span className="text-xs font-bold text-green-700 uppercase tracking-wider block mb-1">VERIFIED / ACTIVE</span>
           <span className="text-2xl font-black text-green-700">{stats.verified}</span>
-          <span className="text-xs text-slate-500 block mt-1">Authorized leadership credentials</span>
+          <span className="text-xs text-slate-500 block mt-1">Authorized leader credentials</span>
         </div>
         <div className="card p-4 border-l-4 border-l-amber-500">
           <span className="text-xs font-bold text-amber-700 uppercase tracking-wider block mb-1">PENDING VERIFICATION</span>
@@ -175,12 +157,12 @@ const TeamLeaders = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8 text-slate-500">Loading team leader records from Supabase...</td>
+                  <td colSpan="8" className="text-center py-8 text-slate-500">Fetching records from team_leaders table...</td>
                 </tr>
               ) : filteredLeaders.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center py-10 text-slate-500">
-                    {search ? 'No team leaders match your search query.' : 'No registered team leaders found in database.'}
+                    {search ? 'No team leaders match your search query.' : 'No registered team leaders found in database table (team_leaders).'}
                   </td>
                 </tr>
               ) : (
@@ -210,7 +192,7 @@ const TeamLeaders = () => {
                       </span>
                     </td>
                     <td className="text-xs text-slate-500 font-mono">
-                      {new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                     </td>
                   </tr>
                 ))

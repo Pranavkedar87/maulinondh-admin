@@ -229,29 +229,25 @@ const AdminOverview = () => {
       setRegTrend(days.map(day => ({ date: new Date(day).toLocaleDateString('en-US', { weekday: 'short' }), count: regMap[day] || 0 })));
 
       // Top districts / Gram Panchayats
-      const { data: gpRaw } = await supabase.from('gram_panchayats').select('panchayat_name, village_name, district');
+      const { data: gpRaw } = await supabase.from('gram_panchayats').select('panchayat_name, village_name, district, registration_id');
       if (gpRaw && gpRaw.length > 0) {
         setDistrictTop(gpRaw.slice(0, 5).map(g => ({
-          name: g.panchayat_name || g.village_name || g.district || 'Gram Panchayat',
-          count: g.registration_id || 'GP-ACTIVE'
+          name: g.panchayat_name || g.village_name || g.district,
+          count: g.registration_id
         })));
       } else {
-        const distMap = {};
-        (varkaris || []).forEach(v => { const d = v.district || 'Unknown'; distMap[d] = (distMap[d] || 0) + 1; });
-        setDistrictTop(Object.entries(distMap).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count })));
+        setDistrictTop([]);
       }
 
       // Top dindis / Team Leaders
       const { data: tlRaw } = await supabase.from('team_leaders').select('full_name, name, registration_id, dindi_name, district');
       if (tlRaw && tlRaw.length > 0) {
         setDindisTop(tlRaw.slice(0, 5).map(t => ({
-          name: t.full_name || t.name || t.registration_id || 'Team Leader',
-          count: t.registration_id || t.dindi_name || 'LEADER'
+          name: t.full_name || t.name || t.registration_id,
+          count: t.registration_id || t.dindi_name
         })));
       } else {
-        const dindiMap = {};
-        (varkaris || []).forEach(v => { const d = v.dindi_name; if (d) dindiMap[d] = (dindiMap[d] || 0) + 1; });
-        setDindisTop(Object.entries(dindiMap).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count })));
+        setDindisTop([]);
       }
 
       // Medical risk
