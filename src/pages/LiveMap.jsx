@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../services/supabase';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
-import { MapPin, AlertTriangle, ShieldAlert, Phone, Navigation, Filter } from 'lucide-react';
+import { MapPin, AlertTriangle, Phone, Navigation, Filter } from 'lucide-react';
 
 const mapContainerStyle = {
   width: '100%',
@@ -25,7 +25,7 @@ const mapOptions = {
   fullscreenControl: true,
 };
 
-// Error Boundary Component to prevent White Screen on map runtime errors
+// Error Boundary Component to catch map runtime errors inside the content area
 class MapErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -43,12 +43,12 @@ class MapErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '2rem', color: '#991b1b', textAlign: 'center' }}>
+        <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '2rem', color: '#991b1b', textAlign: 'center' }}>
           <div>
             <AlertTriangle size={36} className="mx-auto mb-2 text-red-600" />
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.5rem' }}>Google Maps Engine Exception</h3>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.5rem' }}>Map Engine Unable to Load</h3>
             <p style={{ fontSize: '0.8rem', color: '#7f1d1d', maxWidth: '400px' }}>
-              The interactive map could not be initialized. Please check your <code>VITE_GOOGLE_MAPS_API_KEY</code> environment variable configuration on GitHub Pages deployment.
+              The interactive Google Map encountered a script error. Please check your <code>VITE_GOOGLE_MAPS_API_KEY</code> environment configuration.
             </p>
           </div>
         </div>
@@ -74,21 +74,19 @@ const LiveMapContent = () => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
   const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script-live',
+    id: 'google-map-script-live-v2',
     googleMapsApiKey: apiKey
   });
 
   const fetchIncidents = async () => {
     setLoadingData(true);
     try {
-      // 1. QR Alerts
       const { data: qrAlerts } = await supabase
         .from('qr_alerts')
         .select(`*, varkaris(name, registration_id)`)
         .not('latitude', 'is', null)
         .not('longitude', 'is', null);
 
-      // 2. Incidents
       const { data: unifiedIncidents } = await supabase
         .from('incidents')
         .select(`*, varkaris(name, registration_id)`)
@@ -136,7 +134,6 @@ const LiveMapContent = () => {
     fetchIncidents();
   }, []);
 
-  // Compute filtered incidents
   const filteredIncidents = useMemo(() => {
     return incidents.filter(i => {
       if (filterStatus === 'ACTIVE' && i.status === 'RESOLVED') return false;
@@ -178,7 +175,6 @@ const LiveMapContent = () => {
     mapRef.current = null;
   }, []);
 
-  // Recenter map when filters change and bounds change
   useEffect(() => {
     try {
       if (mapRef.current && window.google && window.google.maps && filteredIncidents.length > 0) {
@@ -218,7 +214,7 @@ const LiveMapContent = () => {
   const mappedCount = incidents.length;
 
   return (
-    <AdminLayout title="Live Safety Map">
+    <div>
       <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-4 mb-6">
         <div>
           <h2 className="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
@@ -409,14 +405,16 @@ const LiveMapContent = () => {
           )}
         </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 
 const LiveMap = () => (
-  <MapErrorBoundary>
-    <LiveMapContent />
-  </MapErrorBoundary>
+  <AdminLayout title="Live Safety Map">
+    <MapErrorBoundary>
+      <LiveMapContent />
+    </MapErrorBoundary>
+  </AdminLayout>
 );
 
 export default LiveMap;
