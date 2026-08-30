@@ -121,7 +121,7 @@ const AdminLogin = () => {
       </main>
 
       <footer className="text-center p-4 text-xs" style={{ color: 'var(--text-muted)' }}>
-        © 2026 MAULI NODE Safety Operations Console — All Rights Reserved.
+        © 2026 MAULINONDH Safety Operations Console — All Rights Reserved.
       </footer>
     </div>
   );

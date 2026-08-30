@@ -251,7 +251,7 @@ const PilgrimDetail = () => {
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, 150, 60);
-      pdf.save(`MAULI NODE_QR_Band_${pilgrim.registration_id}.pdf`);
+      pdf.save(`MAULINONDH_QR_Band_${pilgrim.registration_id}.pdf`);
     } catch (err) {
       console.error('Error generating PDF:', err);
       alert('Failed to generate PDF document');
@@ -591,7 +591,7 @@ const PilgrimDetail = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: '18px', fontWeight: '800', color: '#ea580c' }}>MAULI NODE VARKARI BAND</div>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#ea580c' }}>MAULINONDH VARKARI BAND</div>
                 <div style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px' }}>{pilgrim.name}</div>
                 <div style={{ fontSize: '12px' }}>ID: <strong>{pilgrim.registration_id}</strong></div>
                 <div style={{ fontSize: '12px', color: '#dc2626', fontWeight: 'bold', marginTop: '4px' }}>Blood: {pilgrim.blood_group}</div>

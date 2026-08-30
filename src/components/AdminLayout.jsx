@@ -16,26 +16,26 @@ const AdminLayout = ({ children, title }) => {
         <header className="top-header">
           <div className="flex items-center gap-3">
             <button
-              className="btn btn-outline p-2 md:hidden"
-              style={{ padding: '0.4rem', display: 'flex' }}
+              className="btn btn-ghost"
+              style={{ padding: '0.3rem', display: 'flex' }}
               onClick={() => setMobileOpen(!mobileOpen)}
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </button>
-            <div className="flex flex-col">
-              <h1 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--text-main)', textTransform: 'uppercase' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <h1 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                 {title || 'Command Center'}
               </h1>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, display: 'none', '@media(min-width: 768px)': { display: 'block' } }}>
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                {new Date().toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2 px-2.5 py-1" style={{ background: '#fefce8', border: '1px solid #fef08a', borderRadius: '4px', color: '#854d0e', fontSize: '0.75rem', fontWeight: 700 }}>
-               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#eab308' }} className="animate-pulse"></span>
-               NETWORK ACTIVE
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '0.25rem 0.6rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 4, color: '#15803d', fontSize: '0.68rem', fontWeight: 700 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', animation: 'pulse 2s infinite' }} />
+              LIVE
             </div>
             
             <LanguageSelector />
