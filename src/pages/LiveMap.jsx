@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../services/supabase';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
-import { MapPin, AlertTriangle, ShieldAlert, Phone, Navigation } from 'lucide-react';
+import { MapPin, AlertTriangle, ShieldAlert, Phone, Navigation, Filter } from 'lucide-react';
 
 const mapContainerStyle = {
   width: '100%',
@@ -25,22 +25,57 @@ const mapOptions = {
   fullscreenControl: true,
 };
 
-const LiveMap = () => {
+// Error Boundary Component to prevent White Screen on map runtime errors
+class MapErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Map rendering error caught:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '2rem', color: '#991b1b', textAlign: 'center' }}>
+          <div>
+            <AlertTriangle size={36} className="mx-auto mb-2 text-red-600" />
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.5rem' }}>Google Maps Engine Exception</h3>
+            <p style={{ fontSize: '0.8rem', color: '#7f1d1d', maxWidth: '400px' }}>
+              The interactive map could not be initialized. Please check your <code>VITE_GOOGLE_MAPS_API_KEY</code> environment variable configuration on GitHub Pages deployment.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const LiveMapContent = () => {
   const [incidents, setIncidents] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   
   // Filters
   const [filterPriority, setFilterPriority] = useState('ALL');
   const [filterSource, setFilterSource] = useState('ALL');
-  const [filterStatus, setFilterStatus] = useState('ACTIVE'); // ACTIVE = OPEN/REPORTED/IN_PROGRESS
+  const [filterStatus, setFilterStatus] = useState('ACTIVE');
 
   const [selectedIncident, setSelectedIncident] = useState(null);
   
   const mapRef = useRef(null);
 
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
   const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
+    id: 'google-map-script-live',
+    googleMapsApiKey: apiKey
   });
 
   const fetchIncidents = async () => {
@@ -101,63 +136,65 @@ const LiveMap = () => {
     fetchIncidents();
   }, []);
 
-  const onLoad = useCallback(function callback(map) {
-    mapRef.current = map;
-    // Auto center map if we have incidents
-    if (filteredIncidents.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
-      filteredIncidents.forEach(inc => {
-        bounds.extend({ lat: inc.lat, lng: inc.lng });
-      });
-      map.fitBounds(bounds);
-      
-      // Prevent over-zooming on a single point
-      const listener = window.google.maps.event.addListener(map, 'idle', () => {
-        if (map.getZoom() > 16) map.setZoom(16);
-        window.google.maps.event.removeListener(listener);
-      });
-    } else {
-      map.setCenter(PANDHARPUR_CENTER);
-      map.setZoom(12);
-    }
-  }, [incidents]);
-
-  const onUnmount = useCallback(function callback(map) {
-    mapRef.current = null;
-  }, []);
-
   // Compute filtered incidents
   const filteredIncidents = useMemo(() => {
     return incidents.filter(i => {
-      // Status
       if (filterStatus === 'ACTIVE' && i.status === 'RESOLVED') return false;
       if (filterStatus === 'RESOLVED' && i.status !== 'RESOLVED') return false;
       
-      // Source
       if (filterSource === 'IVR' && i.source !== 'IVR') return false;
       if (filterSource === 'WEB_QR' && (i.source === 'IVR')) return false;
       
-      // Priority
       if (filterPriority !== 'ALL' && i.priority !== filterPriority) return false;
       
       return true;
     });
   }, [incidents, filterStatus, filterSource, filterPriority]);
 
+  const onLoad = useCallback(function callback(map) {
+    mapRef.current = map;
+    try {
+      if (window.google && window.google.maps && filteredIncidents.length > 0) {
+        const bounds = new window.google.maps.LatLngBounds();
+        filteredIncidents.forEach(inc => {
+          bounds.extend({ lat: inc.lat, lng: inc.lng });
+        });
+        map.fitBounds(bounds);
+        
+        const listener = window.google.maps.event.addListener(map, 'idle', () => {
+          if (map.getZoom() > 16) map.setZoom(16);
+          window.google.maps.event.removeListener(listener);
+        });
+      } else if (map && typeof map.setCenter === 'function') {
+        map.setCenter(PANDHARPUR_CENTER);
+        map.setZoom(12);
+      }
+    } catch (e) {
+      console.warn("Map bounds error:", e);
+    }
+  }, [filteredIncidents]);
+
+  const onUnmount = useCallback(function callback(map) {
+    mapRef.current = null;
+  }, []);
+
   // Recenter map when filters change and bounds change
   useEffect(() => {
-    if (mapRef.current && filteredIncidents.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
-      filteredIncidents.forEach(inc => bounds.extend({ lat: inc.lat, lng: inc.lng }));
-      mapRef.current.fitBounds(bounds);
+    try {
+      if (mapRef.current && window.google && window.google.maps && filteredIncidents.length > 0) {
+        const bounds = new window.google.maps.LatLngBounds();
+        filteredIncidents.forEach(inc => bounds.extend({ lat: inc.lat, lng: inc.lng }));
+        mapRef.current.fitBounds(bounds);
+      }
+    } catch (e) {
+      console.warn("Bounds error:", e);
     }
   }, [filteredIncidents]);
 
   const getMarkerIcon = (priority) => {
-    // Generate simple SVG data URIs for markers based on priority
-    let color = '#eab308'; // STANDARD - Yellow
-    if (priority === 'CRITICAL') color = '#dc2626'; // CRITICAL - Red
-    if (priority === 'HIGH') color = '#f97316'; // HIGH - Orange
+    let color = '#eab308';
+    if (priority === 'CRITICAL') color = '#dc2626';
+    if (priority === 'HIGH') color = '#f97316';
 
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}" width="32px" height="32px" stroke="#ffffff" stroke-width="2">
@@ -170,13 +207,12 @@ const LiveMap = () => {
 
   const handleIncidentSelect = (incident) => {
     setSelectedIncident(incident);
-    if (mapRef.current) {
+    if (mapRef.current && typeof mapRef.current.panTo === 'function') {
       mapRef.current.panTo({ lat: incident.lat, lng: incident.lng });
       mapRef.current.setZoom(16);
     }
   };
 
-  // Metrics for the header
   const activeCount = incidents.filter(i => i.status !== 'RESOLVED').length;
   const criticalCount = incidents.filter(i => i.status !== 'RESOLVED' && i.priority === 'CRITICAL').length;
   const mappedCount = incidents.length;
@@ -279,12 +315,22 @@ const LiveMap = () => {
         </div>
 
         {/* RIGHT: Google Map */}
-        <div className="w-full lg:w-2/3 bg-slate-100 border border-slate-200 rounded relative shadow-sm">
-          {loadError ? (
+        <div className="w-full lg:w-2/3 bg-slate-100 border border-slate-200 rounded relative shadow-sm overflow-hidden">
+          {!apiKey || apiKey === '' || apiKey.includes('your_google_maps') ? (
+            <div className="absolute inset-0 flex items-center justify-center text-amber-800 bg-amber-50 font-bold p-8 text-center">
+              <div>
+                <AlertTriangle size={32} className="mx-auto mb-2 text-amber-600" />
+                Google Maps API Key Not Configured.<br/>
+                <span className="text-xs font-normal text-amber-700 block mt-2">
+                  Please configure <code>VITE_GOOGLE_MAPS_API_KEY</code> in GitHub Secrets / Environment variables.
+                </span>
+              </div>
+            </div>
+          ) : loadError ? (
             <div className="absolute inset-0 flex items-center justify-center text-red-600 bg-red-50 font-bold p-8 text-center">
               <div>
                 <AlertTriangle size={32} className="mx-auto mb-2" />
-                Unable to load the safety map.<br/>Please check your Google Maps API Key configuration.
+                Unable to load the safety map.<br/>Please check your Google Maps API Key domain restrictions.
               </div>
             </div>
           ) : !isLoaded ? (
@@ -299,7 +345,7 @@ const LiveMap = () => {
               options={mapOptions}
               onLoad={onLoad}
               onUnmount={onUnmount}
-              onClick={() => setSelectedIncident(null)} // Click map to close info window
+              onClick={() => setSelectedIncident(null)}
             >
               {filteredIncidents.map(inc => (
                 <Marker
@@ -366,5 +412,11 @@ const LiveMap = () => {
     </AdminLayout>
   );
 };
+
+const LiveMap = () => (
+  <MapErrorBoundary>
+    <LiveMapContent />
+  </MapErrorBoundary>
+);
 
 export default LiveMap;

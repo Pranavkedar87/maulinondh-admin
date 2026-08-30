@@ -56,29 +56,35 @@ const MiniMap = ({ incidents, selected, onSelect }) => {
   const mapRef = useRef(null);
   const [infoOpen, setInfoOpen] = useState(null);
 
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
+    googleMapsApiKey: apiKey
   });
 
   const onLoad = useCallback((map) => {
     mapRef.current = map;
-    if (incidents.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
-      incidents.forEach(i => bounds.extend({ lat: i.lat, lng: i.lng }));
-      map.fitBounds(bounds);
-      const listener = window.google.maps.event.addListener(map, 'idle', () => {
-        if (map.getZoom() > 15) map.setZoom(15);
-        window.google.maps.event.removeListener(listener);
-      });
-    } else {
-      map.setCenter(PANDHARPUR);
-      map.setZoom(11);
+    try {
+      if (window.google && window.google.maps && incidents.length > 0) {
+        const bounds = new window.google.maps.LatLngBounds();
+        incidents.forEach(i => bounds.extend({ lat: i.lat, lng: i.lng }));
+        map.fitBounds(bounds);
+        const listener = window.google.maps.event.addListener(map, 'idle', () => {
+          if (map.getZoom() > 15) map.setZoom(15);
+          window.google.maps.event.removeListener(listener);
+        });
+      } else if (map && typeof map.setCenter === 'function') {
+        map.setCenter(PANDHARPUR);
+        map.setZoom(11);
+      }
+    } catch (e) {
+      console.warn("MiniMap load error:", e);
     }
   }, [incidents]);
 
   useEffect(() => {
-    if (mapRef.current && selected) {
+    if (mapRef.current && selected && typeof mapRef.current.panTo === 'function') {
       mapRef.current.panTo({ lat: selected.lat, lng: selected.lng });
       mapRef.current.setZoom(15);
       setInfoOpen(selected);
@@ -90,6 +96,12 @@ const MiniMap = ({ incidents, selected, onSelect }) => {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}" width="28px" height="28px" stroke="#ffffff" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3" fill="#ffffff"/></svg>`;
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
+
+  if (!apiKey || apiKey === '' || apiKey.includes('your_google_maps')) return (
+    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fffbeb', borderRadius: 6, color: '#92400e', fontSize: '0.78rem', fontWeight: 600, padding: '1rem', textAlign: 'center' }}>
+      Google Maps API key not set.<br/>Configure VITE_GOOGLE_MAPS_API_KEY.
+    </div>
+  );
 
   if (loadError) return (
     <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', borderRadius: 6, color: '#dc2626', fontSize: '0.8rem', fontWeight: 600, padding: '1rem', textAlign: 'center' }}>
