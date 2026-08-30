@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
 import AdminOverview from './pages/AdminOverview';
@@ -15,6 +15,12 @@ import PublicQRScan from './pages/PublicQRScan';
 import IvrDemo from './pages/IvrDemo';
 import LiveMap from './pages/LiveMap';
 import { Panchayats, Dindis, IvrManagement } from './pages/Placeholders';
+
+// Preserves the :id param when redirecting old routes to new paths
+const RedirectWithId = ({ to }) => {
+  const { id } = useParams();
+  return <Navigate to={`${to}/${id}`} replace />;
+};
 
 function App() {
   const location = useLocation();
@@ -65,7 +71,7 @@ function App() {
         }
       />
       <Route path="/registrations" element={<Navigate to="/varkaris" replace />} />
-      <Route path="/registrations/:id" element={<Navigate to="/varkaris" replace />} />
+      <Route path="/registrations/:id" element={<RedirectWithId to="/varkaris" />} />
       <Route path="/pilgrims/:id" element={<Navigate to="/varkaris" replace />} />
 
       {/* Placeholders */}

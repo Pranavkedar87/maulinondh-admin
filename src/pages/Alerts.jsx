@@ -224,7 +224,7 @@ const Alerts = () => {
                   </button>
                   {alert.varkari?.id && (
                     <button
-                      onClick={() => navigate(`/registrations/${alert.varkari.id}`)}
+                      onClick={() => navigate(`/varkaris/${alert.varkari.id}`)}
                       className="btn btn-outline"
                       style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}
                     >
