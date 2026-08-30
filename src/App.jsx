@@ -9,10 +9,11 @@ import QRTracking from './pages/QRTracking';
 import Verification from './pages/Verification';
 import Alerts from './pages/Alerts';
 import Reports from './pages/Reports';
+import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import PublicQRScan from './pages/PublicQRScan';
 import IvrDemo from './pages/IvrDemo';
-import Analytics from './pages/Analytics';
+import { Panchayats, Dindis, LiveMap, IvrManagement } from './pages/Placeholders';
 
 function App() {
   const location = useLocation();
@@ -45,9 +46,9 @@ function App() {
       />
       <Route path="/dashboard" element={<Navigate to="/overview" replace />} />
 
-      {/* 2. Registrations */}
+      {/* 2. Varkaris (Registrations) */}
       <Route
-        path="/registrations"
+        path="/varkaris"
         element={
           <ProtectedRoute>
             <Registrations />
@@ -55,14 +56,22 @@ function App() {
         }
       />
       <Route
-        path="/registrations/:id"
+        path="/varkaris/:id"
         element={
           <ProtectedRoute>
             <PilgrimDetail />
           </ProtectedRoute>
         }
       />
-      <Route path="/pilgrims/:id" element={<Navigate to="/registrations" replace />} />
+      <Route path="/registrations" element={<Navigate to="/varkaris" replace />} />
+      <Route path="/registrations/:id" element={<Navigate to="/varkaris" replace />} />
+      <Route path="/pilgrims/:id" element={<Navigate to="/varkaris" replace />} />
+
+      {/* Placeholders */}
+      <Route path="/panchayats" element={<ProtectedRoute><Panchayats /></ProtectedRoute>} />
+      <Route path="/dindis" element={<ProtectedRoute><Dindis /></ProtectedRoute>} />
+      <Route path="/map" element={<ProtectedRoute><LiveMap /></ProtectedRoute>} />
+      <Route path="/ivr" element={<ProtectedRoute><IvrManagement /></ProtectedRoute>} />
 
       {/* 3. QR & Tracking */}
       <Route
@@ -84,15 +93,16 @@ function App() {
         }
       />
 
-      {/* 5. Alerts */}
+      {/* 5. Incidents (Alerts & Emergencies) */}
       <Route
-        path="/alerts"
+        path="/incidents"
         element={
           <ProtectedRoute>
             <Alerts />
           </ProtectedRoute>
         }
       />
+      <Route path="/alerts" element={<Navigate to="/incidents" replace />} />
 
       {/* 5. Analytics */}
       <Route

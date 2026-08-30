@@ -8,11 +8,15 @@ import {
   QrCode,
   CheckCheck,
   AlertTriangle,
-  FileBarChart,
+  PieChart,
   Settings,
   LogOut,
   Shield,
-  X
+  X,
+  Home,
+  Flag,
+  Map,
+  Phone
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -26,12 +30,15 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     { path: '/overview', label: 'Overview', icon: LayoutDashboard },
-    { path: '/registrations', label: 'Registrations', icon: Users },
+    { path: '/varkaris', label: 'Varkaris', icon: Users },
+    { path: '/panchayats', label: 'Gram Panchayats', icon: Home },
+    { path: '/dindis', label: 'Team Leaders / Dindis', icon: Flag },
+    { path: '/incidents', label: 'Incidents', icon: AlertTriangle },
+    { path: '/map', label: 'Live Map', icon: Map },
+    { path: '/analytics', label: 'Analytics', icon: PieChart },
+    { path: '/ivr', label: 'IVR', icon: Phone },
     { path: '/verification', label: 'Verification', icon: CheckCheck },
-    { path: '/alerts', label: 'Alerts & Emergencies', icon: AlertTriangle },
-    { path: '/analytics', label: 'Analytics', icon: FileBarChart },
-    { path: '/reports', label: 'Reports', icon: FileBarChart },
-    { path: '/qr-tracking', label: 'QR / Identification', icon: QrCode },
+    { path: '/qr-tracking', label: 'QR / Safety Band', icon: QrCode },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
@@ -40,7 +47,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <div className="sidebar-header">
         <div className="sidebar-brand">
           <Shield size={22} color="var(--primary)" />
-          <span>MAULINOND</span>
+          <span>MAULI NODE</span>
           <span style={{ fontSize: '0.65rem', background: 'var(--primary-light)', color: 'var(--primary-dark)', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 700 }}>ADMIN</span>
         </div>
         {onClose && (

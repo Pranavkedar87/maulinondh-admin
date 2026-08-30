@@ -3,22 +3,23 @@
 :root {
   --primary: #ea580c;         /* Saffron / Orange primary brand */
   --primary-dark: #c2410c;
-  --primary-light: #ffedd5;
+  --primary-light: #fefce8;   /* Warm Ivory / Yellow light accent */
+  --accent-gold: #eab308;     /* Golden Yellow */
   
-  --bg-color: #f8fafc;        /* Neutral Slate background */
+  --bg-color: #fdfbf7;        /* Warm Ivory background */
   --surface: #ffffff;         /* Pure white surface */
-  --text-main: #0f172a;       /* Deep slate primary text */
-  --text-muted: #64748b;      /* Muted gray subtext */
-  --border: #e2e8f0;          /* Clean border lines */
+  --text-main: #27272a;       /* Dark charcoal primary text */
+  --text-muted: #52525b;      /* Muted charcoal subtext */
+  --border: #e4e4e7;          /* Clean border lines */
   
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-full: 9999px;
   
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
   
   --sidebar-width: 250px;
 }
@@ -179,8 +180,8 @@ a:hover {
 .card {
   background: var(--surface);
   border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
-  box-shadow: var(--shadow-sm);
+  padding: 1.25rem 1.5rem;
+  box-shadow: none;
   border: 1px solid var(--border);
 }
 
@@ -297,8 +298,8 @@ a:hover {
   width: 100%;
   overflow-x: auto;
   background: var(--surface);
-  border-radius: var(--radius-md);
   border: 1px solid var(--border);
+  box-shadow: none;
 }
 
 .admin-table {
@@ -309,14 +310,14 @@ a:hover {
 }
 
 .admin-table th {
-  background: #f8fafc;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
+  background: #f1f5f9;
+  padding: 0.65rem 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  border-bottom: 2px solid var(--border);
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
 }
 
 .admin-table td {

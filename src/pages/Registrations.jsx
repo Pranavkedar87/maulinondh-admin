@@ -73,12 +73,12 @@ const Registrations = () => {
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <AdminLayout title="Registrations">
+    <AdminLayout title="Varkari Management">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
-          <h2 style={{ fontSize: '1.3rem' }}>Registration Management</h2>
+          <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-main)' }}>Varkari Directory</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Unified directory for searching, reviewing, and accessing user profiles
+            Unified directory for searching, reviewing, and accessing operational profiles
           </p>
         </div>
 
@@ -172,11 +172,11 @@ const Registrations = () => {
                     </td>
                     <td>
                       <button
-                        onClick={() => navigate(`/registrations/${item.id}`)}
+                        onClick={() => navigate(`/varkaris/${item.id}`)}
                         className="btn btn-outline flex items-center gap-1"
                         style={{ padding: '0.25rem 0.65rem', fontSize: '0.775rem' }}
                       >
-                        <Eye size={14} /> View
+                        <Eye size={14} /> View Profile
                       </button>
                     </td>
                   </tr>

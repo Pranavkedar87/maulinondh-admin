@@ -113,9 +113,9 @@ const Alerts = () => {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'CRITICAL': return 'bg-red-600 text-white';
-      case 'HIGH': return 'bg-orange-500 text-white';
-      default: return 'bg-yellow-500 text-white';
+      case 'CRITICAL': return 'bg-red-600 text-white border-red-700';
+      case 'HIGH': return 'bg-orange-500 text-white border-orange-600';
+      default: return 'bg-yellow-500 text-white border-yellow-600';
     }
   };
 
@@ -149,10 +149,10 @@ const Alerts = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '1.2rem' }}>{alert.source === 'IVR' ? '📞' : '🚨'}</span>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
                     {alert.source === 'IVR' ? `IVR ${alert.type}` : alert.type}
                   </h3>
-                  <span className={`text-xs px-2 py-0.5 rounded font-bold ${getPriorityColor(alert.priority)}`}>
+                  <span className={`text-[0.65rem] px-1.5 py-0.5 rounded font-bold border ${getPriorityColor(alert.priority)}`}>
                     {alert.priority}
                   </span>
                 </div>
