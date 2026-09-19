@@ -1,7 +1,19 @@
 import { createClient } from '@supabase/supabase-js'
 
-const isNode = typeof process !== 'undefined' && process.env && process.env.VITE_SUPABASE_URL;
-const supabaseUrl = isNode ? process.env.VITE_SUPABASE_URL : (import.meta.env?.VITE_SUPABASE_URL || 'https://placeholder-url.supabase.co');
-const supabaseKey = isNode ? process.env.VITE_SUPABASE_PUBLISHABLE_KEY : (import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY || 'placeholder-key');
+const DEFAULT_URL = 'https://uslbhkglghyanyvkcsvi.supabase.co';
+const DEFAULT_KEY = 'sb_publishable_21fMtChUUqqNatMvTtp74A_NgA81HdI';
+
+const getEnvVar = (key, defaultVal) => {
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key];
+  }
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
+    return import.meta.env[key];
+  }
+  return defaultVal;
+};
+
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL', DEFAULT_URL);
+const supabaseKey = getEnvVar('VITE_SUPABASE_PUBLISHABLE_KEY', getEnvVar('VITE_SUPABASE_ANON_KEY', DEFAULT_KEY));
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
